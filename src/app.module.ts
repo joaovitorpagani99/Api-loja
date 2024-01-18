@@ -3,19 +3,22 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { UsuarioModule } from './usuario/usuario.module';
+import { Usuario } from './usuario/entities/usuario.entity';
 
 @Module({
   imports: [
+    UsuarioModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'loja.c98gok6myc8k.us-east-1.rds.amazonaws.com',
-      port: 3306,
-      username: 'admin',
-      password: '18191321',
-      database: 'loja',
-      autoLoadEntities: true,
-      synchronize: true,
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
+      entities: [Usuario],
+      synchronize: process.env.NODE_ENV !== 'production', 
       extra: {
           trustServerCertificate: true,  // confiar no certificado do servidor
           Encrypt: true,  // habilitar criptografia
