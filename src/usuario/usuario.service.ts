@@ -4,32 +4,54 @@ import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Usuario } from './entities/usuario.entity';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsuarioService {
 
+
   constructor(
     @InjectRepository(Usuario)
-    private repository:Repository<Usuario> 
-    ){}
-  
+    private repository: Repository<Usuario>
+  ) { }
+
   async create(createUsuarioDto: CreateUsuarioDto) {
-    return this.repository.save(createUsuarioDto);
+    createUsuarioDto.senha = await this.hashSenha(createUsuarioDto.senha);
+    const usuario = await this.repository.save(createUsuarioDto);
+    return await {
+      ...usuario,
+      delete: usuario.senha,
+    };
   }
 
   async findAll(): Promise<Usuario[]> {
-    return await this.repository.find();
+    return this.repository.find().then((usuarios) => {
+      usuarios.forEach((usuario) => {
+        delete usuario.senha;
+      });
+      return usuarios;
+    });
   }
 
-  async findOne(id: number) {
-    return await this.repository.findOneBy({id: id});
+  async findById(id: number) {
+    return await this.repository.findOneBy({ id: id });
+  }
+
+  async findByEmail(email: string){
+    return await this.repository.findOneBy({ email: email });
   }
 
   async update(id: number, updateUsuarioDto: UpdateUsuarioDto) {
-    return await this.update(id, updateUsuarioDto);
+    return await this.repository.update(id, updateUsuarioDto);
   }
 
   async remove(id: number) {
-    return await this.remove(id);
+    return await this.repository.delete(id);
   }
+
+
+  private async hashSenha(password: string): Promise<string> {
+    return await bcrypt.hash(password, 12);
+  }
+
 }

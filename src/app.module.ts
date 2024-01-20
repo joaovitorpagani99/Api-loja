@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UsuarioModule } from './usuario/usuario.module';
 import { Usuario } from './usuario/entities/usuario.entity';
+import { AuthModule } from './auth/auth.module';
+import { AuthService } from './auth/service/auth.service';
 
 @Module({
   imports: [
@@ -25,6 +27,7 @@ import { Usuario } from './usuario/entities/usuario.entity';
           IntegratedSecurity: false, // desabilitar segurança integrada
       }, 
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
