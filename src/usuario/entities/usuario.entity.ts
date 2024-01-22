@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Loja } from 'src/loja/entities/loja.entity';
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import * as crypto from "crypto";
 import { Role } from "../Enum/role-enum";
 @Entity()
@@ -16,8 +17,8 @@ export class Usuario {
     @Column()
     senha: string;
     
-    @Column()
-    loja: string;
+    @ManyToOne(() => Loja, loja => loja.administrador)
+    loja: Loja[];
     
     @Column()
     permissao: Role;

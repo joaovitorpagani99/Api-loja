@@ -7,6 +7,10 @@ import { Usuario } from './usuario/entities/usuario.entity';
 import { AuthModule } from './auth/auth.module';
 import { LojaModule } from './loja/loja.module';
 import { Loja } from './loja/entities/loja.entity';
+import { ClientesModule } from './clientes/clientes.module';
+import { Cliente } from './clientes/entities/cliente.entity';
+import { PedidoModule } from './pedido/pedido.module';
+import { PagamentoModule } from './pagamento/pagamento.module';
 
 @Module({
   imports: [
@@ -18,7 +22,7 @@ import { Loja } from './loja/entities/loja.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [Usuario, Loja],
+      entities: [Usuario, Loja, Cliente],
       synchronize: process.env.NODE_ENV !== 'production', 
       extra: {
           trustServerCertificate: true,  // confiar no certificado do servidor
@@ -29,6 +33,9 @@ import { Loja } from './loja/entities/loja.entity';
     AuthModule,
     UsuarioModule,
     LojaModule,
+    ClientesModule,
+    PedidoModule,
+    PagamentoModule,
   ],
   controllers: [AppController],
   providers: [],

@@ -5,11 +5,11 @@ import { UpdateLojaDto } from '../dto/update-loja.dto';
 import { Loja } from '../entities/loja.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { error } from 'console';
+
 
 @Injectable()
 export class LojaService {
-
+ 
   constructor(
     @InjectRepository(Loja)
     private lojaRepository: Repository<Loja>,
@@ -57,13 +57,30 @@ export class LojaService {
     return this.lojaRepository.delete(id);
   }
 
+  async getLojasDoUsuario(userId: number) {
+    console.log(`Procurando lojas para o usuário com ID: ${userId}`);
+    try {
+      const lojas = await this.lojaRepository.find({ 
+        where: { 
+          administrador: { id: userId } 
+        } 
+      });
+      return lojas.map(loja => this.responseLoja(loja));
+    } catch (error) {
+      throw new Error(`Erro ao obter lojas do usuário: ${error.message}`);
+    }
+  }
+
+
+
   private async responseLoja(loja: Loja): Promise<ResponseLoja> {
     const response: ResponseLoja = {
       id : loja.id,
       nome: loja.nome,
       endereco: loja.endereco,
       telefone: loja.telefone,
-      cnpj: loja.cnpj
+      cnpj: loja.cnpj,
+      usuario: loja.administrador
     };
     return response;
   }

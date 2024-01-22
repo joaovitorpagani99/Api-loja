@@ -4,8 +4,10 @@ import { CreateLojaDto } from '../dto/create-loja.dto';
 import { UpdateLojaDto } from '../dto/update-loja.dto';
 import { Role } from 'src/usuario/Enum/role-enum';
 import { Roles } from 'src/auth/decorator/roles.decorator';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('loja')
+@ApiTags('auth')
 export class LojaController {
   constructor(private readonly lojaService: LojaService) { }
 
@@ -38,5 +40,11 @@ export class LojaController {
   @HttpCode(HttpStatus.NO_CONTENT)
   public async remove(@Param('id') id: string) {
     await this.lojaService.remove(+id);
+  }
+
+
+  @Get(':id/lojas')
+  public async getLojasDoUsuario(@Param('id') id: string) {
+    return await this.lojaService.getLojasDoUsuario(+id);
   }
 }
