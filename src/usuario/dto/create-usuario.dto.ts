@@ -1,11 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNumber, IsString, Matches, MaxLength, MinLength } from "class-validator";
+import { IsEmail, IsEnum, IsNumber, IsString, Matches, MaxLength, MinLength } from "class-validator";
+import {  Role  } from "../Enum/role-enum";
 
 export class CreateUsuarioDto {
 
     @ApiProperty()
     @IsString()
     nome?: string;
+    
     @IsEmail()
     email?: string;
 
@@ -13,11 +15,9 @@ export class CreateUsuarioDto {
     @IsString()
     @MinLength(4)
     @MaxLength(20)
-    @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-      message: 'password too weak',
-    })
-
-    @ApiProperty()
+    //@Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+    //  message: 'Senha muito fraca',
+    //})
     @IsString()
     senha?: string;
     
@@ -30,6 +30,7 @@ export class CreateUsuarioDto {
     loja?: string;
 
     @ApiProperty()
-    @IsString()
-    permissao?: string ;
+    @IsEnum(Role)
+    permissao?: Role;
+
 }
