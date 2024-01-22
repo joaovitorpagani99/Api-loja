@@ -1,3 +1,4 @@
+import { Usuario } from 'src/usuario/entities/usuario.entity';
 export class ResponseLoja {
     id: number;
     nome?: string;
@@ -5,4 +6,5 @@ export class ResponseLoja {
     telefone?: string;
     email?: string;
     cnpj?: string;
+    usuario?: Usuario;
 }

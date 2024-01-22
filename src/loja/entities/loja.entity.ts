@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Cliente } from "src/clientes/entities/cliente.entity";
+import { Usuario } from "src/usuario/entities/usuario.entity";
+import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Loja {
@@ -20,4 +22,10 @@ export class Loja {
 
     @Column()
     endereco: string;
+
+    @ManyToOne(() => Usuario, usuario => usuario.loja)
+    administrador: Usuario;
+
+    @ManyToMany(() => Cliente, cliente => cliente.lojas)
+    clientes: Cliente[];
 }

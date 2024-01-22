@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsEmail, IsString } from "class-validator";
+import { Usuario } from "src/usuario/entities/usuario.entity";
 
 export class CreateLojaDto {
 
@@ -22,4 +23,7 @@ export class CreateLojaDto {
     @ApiProperty()
     @IsString()
     endereco ?: string;
+
+    @ApiProperty()
+    usuario?: Usuario;
 }

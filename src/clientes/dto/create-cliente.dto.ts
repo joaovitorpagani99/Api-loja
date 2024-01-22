@@ -1,8 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsEnum, IsNumber, IsString, Matches, MaxLength, MinLength } from "class-validator";
-import {  Role  } from "../Enum/role-enum";
-export class CreateUsuarioDto {
+import { IsEmail, IsEnum, IsNumber, IsString, MaxLength, MinLength } from "class-validator";
+import { Loja } from "src/loja/entities/loja.entity";
+import { Role } from "src/usuario/Enum/role-enum";
 
+export class CreateClienteDto {
     @ApiProperty()
     @IsString()
     nome?: string;
@@ -10,7 +11,7 @@ export class CreateUsuarioDto {
     @ApiProperty()
     @IsEmail()
     email?: string;
-
+    
     @ApiProperty()
     @IsString()
     @MinLength(4)
@@ -24,9 +25,18 @@ export class CreateUsuarioDto {
     @ApiProperty()
     @IsNumber()
     idade?: Number;
-
+    
+    @ApiProperty()
+    @IsString()
+    endereco?: string;
+    
     @ApiProperty()
     @IsEnum(Role)
     permissao?: Role;
+    
+    @ApiProperty()
+    deletado?: boolean = false;
 
+    @ApiProperty()
+    lojas: Loja[];
 }
