@@ -3,16 +3,19 @@ import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { WinstonModule } from 'nest-winston';
+import { AllExceptionsFilter } from './Exception/exception-glocal';
 
 
 async function bootstrap() {
   dotenv.config();
   const app = await NestFactory.create(AppModule);
+
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   //swagger
-
   const config = new DocumentBuilder()
     .setTitle('Documentação com Swagger - Fábrica de Sinapse')
     .setDescription(

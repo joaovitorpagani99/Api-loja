@@ -1,16 +1,15 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { UsuarioModule } from './usuario/usuario.module';
 import { Usuario } from './usuario/entities/usuario.entity';
 import { AuthModule } from './auth/auth.module';
-import { AuthService } from './auth/service/auth.service';
+import { LojaModule } from './loja/loja.module';
+import { Loja } from './loja/entities/loja.entity';
 
 @Module({
   imports: [
-    UsuarioModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -19,7 +18,7 @@ import { AuthService } from './auth/service/auth.service';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [Usuario],
+      entities: [Usuario, Loja],
       synchronize: process.env.NODE_ENV !== 'production', 
       extra: {
           trustServerCertificate: true,  // confiar no certificado do servidor
@@ -28,8 +27,10 @@ import { AuthService } from './auth/service/auth.service';
       }, 
     }),
     AuthModule,
+    UsuarioModule,
+    LojaModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [],
 })
 export class AppModule { }
