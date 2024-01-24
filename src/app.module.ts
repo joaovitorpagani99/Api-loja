@@ -11,6 +11,18 @@ import { ClientesModule } from './clientes/clientes.module';
 import { Cliente } from './clientes/entities/cliente.entity';
 import { PedidoModule } from './pedido/pedido.module';
 import { PagamentoModule } from './pagamento/pagamento.module';
+import { ProdutoModule } from './produto/produto.module';
+import { CategoriaModule } from './categoria/categoria.module';
+import { AvaliacaoModule } from './avaliacao/avaliacao.module';
+import { Categoria } from './categoria/entities/categoria.entity';
+import { Pagamento } from './pagamento/entities/pagamento.entity';
+import { Pedido } from './pedido/entities/pedido.entity';
+import { VariacoesModule } from './variacoes/variacoes.module';
+import { EntregaModule } from './entrega/entrega.module';
+import { Avaliacao } from './avaliacao/entities/avaliacao.entity';
+import { Entrega } from './entrega/entities/entrega.entity';
+import { Produto } from './produto/entities/produto.entity';
+import { Variacoes } from './variacoes/entities/variacoe.entity';
 
 @Module({
   imports: [
@@ -22,7 +34,9 @@ import { PagamentoModule } from './pagamento/pagamento.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      entities: [Usuario, Loja, Cliente],
+      entities: [
+        Usuario, Loja, Cliente, Categoria, Pagamento, Pedido, Avaliacao, Entrega, Produto, Variacoes
+       ],
       synchronize: process.env.NODE_ENV !== 'production', 
       extra: {
           trustServerCertificate: true,  // confiar no certificado do servidor
@@ -36,6 +50,11 @@ import { PagamentoModule } from './pagamento/pagamento.module';
     ClientesModule,
     PedidoModule,
     PagamentoModule,
+    ProdutoModule,
+    CategoriaModule,
+    AvaliacaoModule,
+    VariacoesModule,
+    EntregaModule,
   ],
   controllers: [AppController],
   providers: [],

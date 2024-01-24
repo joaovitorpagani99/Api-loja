@@ -7,7 +7,7 @@ import { Roles } from 'src/auth/decorator/roles.decorator';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('loja')
-@ApiTags('auth')
+@ApiTags('loja')
 export class LojaController {
   constructor(private readonly lojaService: LojaService) { }
 
