@@ -1,8 +1,8 @@
+import { Loja } from 'src/loja/entities/loja.entity';
 import { ResponseLoja } from './../dto/response-loja.dto';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLojaDto } from '../dto/create-loja.dto';
 import { UpdateLojaDto } from '../dto/update-loja.dto';
-import { Loja } from '../entities/loja.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -17,7 +17,7 @@ export class LojaService {
 
   async create(createLojaDto: CreateLojaDto): Promise<ResponseLoja> {
     return this.lojaRepository.save(createLojaDto).then((loja) => {
-      return this.responseLoja(loja);
+      return loja;
     }).catch((err) => {
       throw new BadRequestException(err.message);
     });
@@ -28,13 +28,13 @@ export class LojaService {
       if (lojas.length === 0) {
         throw new NotFoundException('Nenhuma loja encontrada');
       }
-      return Promise.all(lojas.map(loja => this.responseLoja(loja)));
+      return Promise.all(lojas.map(loja => loja));
     });
   }
 
-  async findById(id: number): Promise<ResponseLoja> {
+  async findById(id: number): Promise<Loja>{
     return this.lojaRepository.findOne({ where: { id } }).then((loja) => {
-      return this.responseLoja(loja);
+      return loja;
     }).catch((err) => {
       throw new NotFoundException("Loja não encontrada");
     });
@@ -65,23 +65,9 @@ export class LojaService {
           administrador: { id: userId } 
         } 
       });
-      return lojas.map(loja => this.responseLoja(loja));
+      return lojas.map(loja => loja);
     } catch (error) {
       throw new Error(`Erro ao obter lojas do usuário: ${error.message}`);
     }
-  }
-
-
-
-  private async responseLoja(loja: Loja): Promise<ResponseLoja> {
-    const response: ResponseLoja = {
-      id : loja.id,
-      nome: loja.nome,
-      endereco: loja.endereco,
-      telefone: loja.telefone,
-      cnpj: loja.cnpj,
-      usuario: loja.administrador
-    };
-    return response;
   }
 }
