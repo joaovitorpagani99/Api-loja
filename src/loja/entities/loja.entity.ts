@@ -30,8 +30,11 @@ export class Loja {
     @OneToMany(() => Produto, produto => produto.loja)
     produtos: Produto[];
 
-    @OneToOne(()=> Avaliacao, avaliacao => avaliacao.loja)
-    avaliacao: Avaliacao;
+    @OneToMany(() => Avaliacao, avaliacao => avaliacao.loja)
+    avaliacoes: Avaliacao[];
+
+    @OneToMany(() => Pedido, pedidos => pedidos.loja)
+    pedidos: Pedido[];
 
     @ManyToOne(() => Usuario, usuario => usuario.loja)
     administrador: Usuario;
@@ -40,8 +43,6 @@ export class Loja {
     clientes: Cliente[];
 
     @OneToMany(() => Categoria, categoria => categoria.loja)
-    categoria: Categoria[];
+    categorias: Categoria[];
 
-    @OneToMany(()=> Pedido, pedidos => pedidos.loja)
-    pedidos: Pedido[]
 }

@@ -40,6 +40,4 @@ export class Cliente {
     @OneToMany(()=> Pedido, pedidos => pedidos.cliente)
     pedidos: Pedido[];
 
-    @OneToMany(() => Avaliacao, avaliacao => avaliacao.cliente)
-    avaliacoes: Avaliacao[]; 
 }

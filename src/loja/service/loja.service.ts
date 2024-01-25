@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class LojaService {
- 
+
   constructor(
     @InjectRepository(Loja)
     private lojaRepository: Repository<Loja>,
@@ -32,12 +32,19 @@ export class LojaService {
     });
   }
 
-  async findById(id: number): Promise<Loja>{
-    return this.lojaRepository.findOne({ where: { id } }).then((loja) => {
-      return loja;
-    }).catch((err) => {
-      throw new NotFoundException("Loja não encontrada");
-    });
+  async findById(id: number): Promise<Loja> {
+
+    const loja = await this.lojaRepository.findOne(
+      {
+        where: { id },
+        relations: ['produtos', 'administrador']
+      }
+    );
+
+    if (!loja) {
+      throw new NotFoundException(`Loja com id ${id} não encontrada`);
+    }
+    return loja;
   }
 
   async update(id: number, updateLojaDto: UpdateLojaDto): Promise<ResponseLoja> {
@@ -60,10 +67,10 @@ export class LojaService {
   async getLojasDoUsuario(userId: number) {
     console.log(`Procurando lojas para o usuário com ID: ${userId}`);
     try {
-      const lojas = await this.lojaRepository.find({ 
-        where: { 
-          administrador: { id: userId } 
-        } 
+      const lojas = await this.lojaRepository.find({
+        where: {
+          administrador: { id: userId }
+        }
       });
       return lojas.map(loja => loja);
     } catch (error) {

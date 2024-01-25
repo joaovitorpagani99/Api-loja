@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode } from '@nestjs/common';
 import { VariacoesService } from '../service/variacoes.service';
 import { CreateVariacoeDto } from '../dto/create-variacoe.dto';
 import { UpdateVariacoeDto } from '../dto/update-variacoe.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/auth/decorator/roles.decorator';
+import { Role } from 'src/usuario/Enum/role-enum';
 
 @Controller('variacoes')
 @ApiTags('variacoes')
@@ -30,6 +32,8 @@ export class VariacoesController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
+  @Roles(Role.ADMIN)
   remove(@Param('id') id: string) {
     return this.variacoesService.remove(+id);
   }

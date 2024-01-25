@@ -32,6 +32,11 @@ export class ProdutoController {
     return this.produtoService.findByPesquisa(search);
   }
 
+  @Get('/:idVariacoes/variacooes')
+  public async findVariacoes(@Param('idVariacoes') idVariacoes: string) {
+    //return this.produtoService.findVariacoes(+idVariacoes);
+  }
+
   @Post()
   @Roles(Role.ADMIN)
   public async create(@Body() createProdutoDto: CreateProdutoDto) {
