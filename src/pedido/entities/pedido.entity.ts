@@ -4,11 +4,22 @@ import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, Prima
 import { Cliente } from 'src/clientes/entities/cliente.entity';
 import { Produto } from 'src/produto/entities/produto.entity';
 import { Loja } from 'src/loja/entities/loja.entity';
+import { Variacoes } from 'src/variacoes/entities/variacoe.entity';
+import { RegistroPedido } from './registroPedido';
 
 @Entity()
 export class Pedido {
     @PrimaryGeneratedColumn()
     id: string;
+
+    @Column()
+    quantidade: number;
+
+    @Column()
+    precoUnitario: number;
+
+    @Column({ default: false })
+    cancelado: boolean;
 
     @ManyToOne(() => Cliente, cliente => cliente.pedidos)
     cliente: Cliente;
@@ -22,11 +33,14 @@ export class Pedido {
     @OneToMany(()=> Produto, produtos => produtos.pedido)
     produtos: Produto[];
 
+    @OneToMany(() => Variacoes, variacoes => variacoes.pedido)
+    variacoes: Variacoes[];
+
     @ManyToOne(()=> Loja, loja => loja.pedidos)
     loja: Loja;
 
-    @Column()
-    cancelado: boolean;
+    @OneToMany(() => RegistroPedido, registroPedido => registroPedido.pedido)
+    registros: RegistroPedido[];
 
     @CreateDateColumn()
     createdAt: Date;

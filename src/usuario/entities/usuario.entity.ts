@@ -11,7 +11,7 @@ export class Usuario {
     @Column()
     nome: string;
     
-    @Column()
+    @Column({ unique: true})
     email: string;
 
     @Column()
@@ -31,7 +31,6 @@ export class Usuario {
 
     @Column({ nullable: true, type: 'varchar', length: 64 })
     confirmationToken: string;
-
   
     @CreateDateColumn()
     createdAt: Date;

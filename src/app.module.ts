@@ -23,6 +23,7 @@ import { Avaliacao } from './avaliacao/entities/avaliacao.entity';
 import { Entrega } from './entrega/entities/entrega.entity';
 import { Produto } from './produto/entities/produto.entity';
 import { Variacoes } from './variacoes/entities/variacoe.entity';
+import { RegistroPedido } from './pedido/entities/registroPedido';
 
 @Module({
   imports: [
@@ -35,7 +36,7 @@ import { Variacoes } from './variacoes/entities/variacoe.entity';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       entities: [
-        Usuario, Loja, Cliente, Categoria, Pagamento, Pedido, Avaliacao, Entrega, Produto, Variacoes
+        Usuario, Loja, Cliente, Categoria, Pagamento, Pedido, Avaliacao, Entrega, Produto, Variacoes,RegistroPedido
        ],
       synchronize: process.env.NODE_ENV !== 'production', 
       extra: {

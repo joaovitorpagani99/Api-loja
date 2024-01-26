@@ -1,5 +1,6 @@
+import { Pedido } from "src/pedido/entities/pedido.entity";
 import { Produto } from "src/produto/entities/produto.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
 export class Variacoes {
@@ -22,6 +23,9 @@ export class Variacoes {
 
     @ManyToOne(() => Produto, produto => produto.variacoes)
     produto: Produto;
+
+    @ManyToOne(() => Pedido, pedido => pedido.variacoes)
+    pedido: Pedido;
 
     @CreateDateColumn()
     createdAt: Date;

@@ -44,17 +44,7 @@ export class AuthController {
     return this.authService.createRecovery(email);
   }*/
 
-  // e fazer funcionar o signup, por email tbm
-  @IsPublic()
-  @Post('/signup')
-  async signUp(
-    @Body() createUserDto: CreateUsuarioDto,
-  ): Promise<{ message: string }> {
-    await this.authService.signUp(createUserDto);
-    return {
-      message: 'Cadastro realizado com sucesso',
-    };
-  }
+
 
   @UseGuards(AuthGuard)
   @Get('profile')
