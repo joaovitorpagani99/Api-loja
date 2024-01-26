@@ -1,5 +1,4 @@
 import { Loja } from 'src/loja/entities/loja.entity';
-import { ResponseLoja } from './../dto/response-loja.dto';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLojaDto } from '../dto/create-loja.dto';
 import { UpdateLojaDto } from '../dto/update-loja.dto';
@@ -15,7 +14,7 @@ export class LojaService {
     private lojaRepository: Repository<Loja>,
   ) { }
 
-  async create(createLojaDto: CreateLojaDto): Promise<ResponseLoja> {
+  async create(createLojaDto: CreateLojaDto): Promise<Loja> {
     return this.lojaRepository.save(createLojaDto).then((loja) => {
       return loja;
     }).catch((err) => {
@@ -23,7 +22,7 @@ export class LojaService {
     });
   }
 
-  async findAll(): Promise<ResponseLoja[]> {
+  async findAll(): Promise<Loja[]> {
     return this.lojaRepository.find().then((lojas) => {
       if (lojas.length === 0) {
         throw new NotFoundException('Nenhuma loja encontrada');
@@ -47,7 +46,7 @@ export class LojaService {
     return loja;
   }
 
-  async update(id: number, updateLojaDto: UpdateLojaDto): Promise<ResponseLoja> {
+  async update(id: number, updateLojaDto: UpdateLojaDto): Promise<Loja> {
     return this.lojaRepository.update(id, updateLojaDto).then((loja) => {
       return this.findById(id);
     }).catch(err => {

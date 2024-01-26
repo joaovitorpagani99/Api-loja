@@ -1,3 +1,4 @@
+import { Entrega } from 'src/entrega/entities/entrega.entity';
 import { Avaliacao } from 'src/avaliacao/entities/avaliacao.entity';
 import { Categoria } from "src/categoria/entities/categoria.entity";
 import { Cliente } from "src/clientes/entities/cliente.entity";
@@ -5,6 +6,7 @@ import { Pedido } from "src/pedido/entities/pedido.entity";
 import { Produto } from 'src/produto/entities/produto.entity';
 import { Usuario } from "src/usuario/entities/usuario.entity";
 import { Column, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Pagamento } from 'src/pagamento/entities/pagamento.entity';
 
 @Entity()
 export class Loja {
@@ -44,5 +46,11 @@ export class Loja {
 
     @OneToMany(() => Categoria, categoria => categoria.loja)
     categorias: Categoria[];
+
+    @OneToOne(() => Entrega, entrega => entrega.loja)
+    entrega: Entrega;
+
+    @OneToMany(() => Pagamento, pagamento => pagamento.loja)
+    pagamentos: Pagamento[];
 
 }

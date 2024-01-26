@@ -3,11 +3,8 @@ import { UpdateDateColumn } from "typeorm";
 
 export class CreateVariacoeDto {
 
-    @IsNumber()
     @IsOptional()
-    id: number;
-    
-    @IsOptional()
+    @IsString()
     nome: string;
     
     @IsNumber()
@@ -18,7 +15,6 @@ export class CreateVariacoeDto {
     @IsOptional()
     promocao: number;
     
-    @IsString()
     @IsOptional()
     fotos: string[];
     
@@ -27,6 +23,5 @@ export class CreateVariacoeDto {
     entrega: string;
     
     @IsNumber()
-    @IsOptional()
     idProduto: number;
 }
