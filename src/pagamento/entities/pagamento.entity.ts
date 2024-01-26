@@ -23,6 +23,6 @@ export class Pagamento {
     @OneToOne(() => Pedido, pedido => pedido.pagamento)
     pedido: Pedido
 
-    @ManyToOne(() => Loja, loja => loja.pagamentos)
+    @ManyToOne(() => Loja, loja => loja.pagamentos,{ onDelete: 'CASCADE' })
     loja: Loja;
 }

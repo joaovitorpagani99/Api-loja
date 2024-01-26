@@ -17,10 +17,10 @@ export class Avaliacao {
     @Column({default: 1})
     pontuacao: number;
 
-    @ManyToOne(()=> Produto, produto => produto.avaliacoes)
+    @ManyToOne(()=> Produto, produto => produto.avaliacoes, { onDelete: 'CASCADE' })
     produto: Produto;
 
-    @ManyToOne(() => Loja, loja => loja.avaliacoes)
+    @ManyToOne(() => Loja, loja => loja.avaliacoes, { onDelete: 'CASCADE' })
     loja: Loja;
 
 }

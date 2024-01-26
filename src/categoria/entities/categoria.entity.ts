@@ -16,6 +16,6 @@ export class Categoria {
     @OneToMany(() => Produto, produto => produto.categoria)
     produtos: Produto[];
 
-    @ManyToOne(() => Loja, loja => loja.categorias)
+    @ManyToOne(() => Loja, loja => loja.categorias,{ onDelete: 'CASCADE' })
     loja: Loja;
 }

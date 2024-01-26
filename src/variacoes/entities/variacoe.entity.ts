@@ -21,10 +21,10 @@ export class Variacoes {
     @Column()
     entrega: string;
 
-    @ManyToOne(() => Produto, produto => produto.variacoes)
+    @ManyToOne(() => Produto, produto => produto.variacoes, { onDelete: 'CASCADE' })
     produto: Produto;
 
-    @ManyToOne(() => Pedido, pedido => pedido.variacoes)
+    @ManyToOne(() => Pedido, pedido => pedido.variacoes, { onDelete: 'CASCADE' })
     pedido: Pedido;
 
     @CreateDateColumn()

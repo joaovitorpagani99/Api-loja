@@ -1,6 +1,4 @@
 import { IsBoolean, IsNumber, IsString, IsOptional, IsPositive } from 'class-validator';
-import { Loja } from 'src/loja/entities/loja.entity';
-import { Pedido } from 'src/pedido/entities/pedido.entity';
 
 export class CreateProdutoDto {
 
@@ -30,9 +28,7 @@ export class CreateProdutoDto {
     @IsNumber()
     categoriaId: number;
 
-    @IsOptional()
-    loja?: Loja;
+    @IsNumber()
+    idLoja?: number;
 
-    @IsOptional()
-    pedido?: Pedido;
 }

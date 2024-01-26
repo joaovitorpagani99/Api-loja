@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Categoria } from "src/categoria/entities/categoria.entity";
 import {  Variacoes } from 'src/variacoes/entities/variacoe.entity';
 import { Avaliacao } from 'src/avaliacao/entities/avaliacao.entity';
@@ -32,19 +32,23 @@ export class Produto {
     @Column()
     sku: string;
      
-    @ManyToOne(() => Categoria, categoria => categoria.produtos)
+    @ManyToOne(() => Categoria, categoria => categoria.produtos, {
+        onDelete: 'CASCADE'
+    })
     categoria: Categoria;
 
-    @ManyToOne(() => Loja, loja => loja.produtos)
+    @ManyToOne(() => Loja, loja => loja.produtos, {
+        onDelete: 'CASCADE'
+      })
     loja: Loja;
 
-    @OneToMany(()=> Variacoes, variacoes => variacoes.produto)
+    @OneToMany(() => Variacoes, variacoes => variacoes.produto)    
     variacoes: Variacoes[];
 
     @OneToMany(() => Avaliacao, avaliacao => avaliacao.produto)
     avaliacoes: Avaliacao[];
 
-    @ManyToOne(() => Pedido, pedido => pedido.produtos)
-    pedido: Pedido;
+    @ManyToMany(() => Pedido, pedido => pedido.produtos)
+    pedidos: Pedido[];
 }
  

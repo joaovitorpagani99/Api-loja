@@ -14,13 +14,13 @@ export class Loja {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({nullable: false})
     nome: string;
 
-    @Column()
+    @Column({nullable: false})
     cnpj: string;
 
-    @Column()
+    @Column({nullable: false, unique:true})
     email: string;
 
     @Column()
@@ -38,7 +38,9 @@ export class Loja {
     @OneToMany(() => Pedido, pedidos => pedidos.loja)
     pedidos: Pedido[];
 
-    @ManyToOne(() => Usuario, usuario => usuario.loja)
+    @ManyToOne(() => Usuario, usuario => usuario.loja, {
+        onDelete: 'CASCADE'
+      })
     administrador: Usuario;
 
     @ManyToMany(() => Cliente, cliente => cliente.lojas)

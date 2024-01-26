@@ -36,14 +36,15 @@ import { RegistroPedido } from './pedido/entities/registroPedido';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       entities: [
-        Usuario, Loja, Cliente, Categoria, Pagamento, Pedido, Avaliacao, Entrega, Produto, Variacoes,RegistroPedido
-       ],
-      synchronize: process.env.NODE_ENV !== 'production', 
+        Usuario, Loja, Cliente, Categoria, Pagamento, Pedido, Avaliacao, Entrega, Produto, Variacoes, RegistroPedido
+      ],
+      synchronize: true,
+      keepConnectionAlive: true,
       extra: {
-          trustServerCertificate: true,  // confiar no certificado do servidor
-          Encrypt: true,  // habilitar criptografia
-          IntegratedSecurity: false, // desabilitar segurança integrada
-      }, 
+        trustServerCertificate: true,
+        Encrypt: true,
+        IntegratedSecurity: false,
+      },
     }),
     AuthModule,
     UsuarioModule,
@@ -58,6 +59,5 @@ import { RegistroPedido } from './pedido/entities/registroPedido';
     EntregaModule,
   ],
   controllers: [AppController],
-  providers: [],
 })
 export class AppModule { }

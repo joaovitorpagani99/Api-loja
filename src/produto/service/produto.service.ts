@@ -1,6 +1,6 @@
 import { LojaService } from './../../loja/service/loja.service';
 import { Loja } from 'src/loja/entities/loja.entity';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
 import { CreateProdutoDto } from '../dto/create-produto.dto';
 import { UpdateProdutoDto } from '../dto/update-produto.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,16 +12,15 @@ export class ProdutoService {
 
   constructor(
     @InjectRepository(Produto)
-    private produtoRepository: Repository<Produto>,
-    private lojaService: LojaService
-  ) { }
+    private readonly produtoRepository: Repository<Produto>,
+  ) {}
 
   async create(createProdutoDto: CreateProdutoDto) {
-    const loja = await this.lojaService.findById(createProdutoDto.loja.id);
+    /*const loja = await this.lojaService.findById(createProdutoDto.idLoja);
 
     if (!loja) {
       throw new NotFoundException('Loja não encontrada');
-    }
+    }*/
 
     await this.produtoRepository.save(createProdutoDto).then((produto) => {
       return produto;
@@ -32,14 +31,13 @@ export class ProdutoService {
   }
 
   async findAll(idLoja: string): Promise<Produto[]> {
-    const loja: Loja = await this.lojaService.findById(+idLoja);
+  /*  const loja: Loja = await this.lojaService.findById(+idLoja);
 
     if (loja == null) {
       throw new NotFoundException('Nenhum loja com esse id.');
-    }
+    }*/
 
     const produtos = await this.produtoRepository.find({
-      where: { loja: loja },
       relations: ['categoria', 'loja', 'variacoes', 'avaliacoes', 'pedido'],
     });
 
@@ -47,23 +45,7 @@ export class ProdutoService {
       throw new NotFoundException('Nenhum produto cadastrado nessa loja.');
     }
 
-    const response: Produto[] = produtos.map((produto) => ({
-      id: produto.id,
-      titulo: produto.titulo,
-      disponibilidade: produto.disponibilidade,
-      descricao: produto.descricao,
-      imagens: produto.imagens,
-      preco: produto.preco,
-      promocao: produto.promocao,
-      sku: produto.sku,
-      categoria: produto.categoria,
-      loja: produto.loja,
-      variacoes: produto.variacoes,
-      avaliacoes: produto.avaliacoes,
-      pedido: produto.pedido,
-    }));
-
-    return response;
+    return produtos;
   }
   async findById(id: number) {
     const produto = await this.produtoRepository.findOne({
@@ -88,12 +70,11 @@ export class ProdutoService {
 
 
   async findByDisponiveis(idLoja: number) {
-    const loja = await this.lojaService.findById(idLoja);
-    if (!loja) throw new NotFoundException("Loja não encontrada.");
+    /*const loja = await this.lojaService.findById(idLoja);
+    if (!loja) throw new NotFoundException("Loja não encontrada.");*/
     const produtos = await this.produtoRepository.find({
       where: {
         disponibilidade: true,
-        loja: loja
       },
       relations: ['categoria', 'loja', 'variacoes', 'avaliacoes', 'pedido'],
     });
