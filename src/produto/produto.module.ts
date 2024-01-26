@@ -12,5 +12,6 @@ import { LojaModule } from 'src/loja/loja.module';
   ] ,
   controllers: [ProdutoController],
   providers: [ProdutoService],
+  exports: [ProdutoService]
 })
 export class ProdutoModule {}

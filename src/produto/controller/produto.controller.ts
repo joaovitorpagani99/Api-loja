@@ -61,4 +61,16 @@ export class ProdutoController {
   public async remove(@Param('id') id: string) {
     await this.produtoService.remove(+id);
   }
+
+  @Get('/:idVariacoes/variacooes')
+  public async findVariacoes(@Param('idVariacoes') idVariacoes: string) {
+    //return this.produtoService.findVariacoes(+idVariacoes);
+  }
+
+  @Get('/:idAvaliacoes/avaliacoes')
+  public async findAvaliacoes(@Param('idAvaliacoes') idAvaliacoes: string) {
+    //return this.produtoService.findVariacoes(+idAvaliacoes);
+  }
+
+
 }

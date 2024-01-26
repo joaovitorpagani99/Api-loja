@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, Put } from '@nestjs/common';
 import { VariacoesService } from '../service/variacoes.service';
 import { CreateVariacoeDto } from '../dto/create-variacoe.dto';
 import { UpdateVariacoeDto } from '../dto/update-variacoe.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { Roles } from 'src/auth/decorator/roles.decorator';
+import { Role } from 'src/usuario/Enum/role-enum';
 
 @Controller('variacoes')
 @ApiTags('variacoes')
@@ -10,27 +12,37 @@ export class VariacoesController {
   constructor(private readonly variacoesService: VariacoesService) {}
 
   @Post()
-  create(@Body() createVariacoeDto: CreateVariacoeDto) {
-    return this.variacoesService.create(createVariacoeDto);
+  @Roles(Role.ADMIN)
+  public async create(@Body() createVariacoeDto: CreateVariacoeDto) {
+    return await this.variacoesService.create(createVariacoeDto);
   }
 
   @Get()
-  findAll() {
-    return this.variacoesService.findAll();
+  public async findAll() {
+    return await this.variacoesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.variacoesService.findOne(+id);
+  public async findOne(@Param('id') id: string) {
+    return await this.variacoesService.findById(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateVariacoeDto: UpdateVariacoeDto) {
-    return this.variacoesService.update(+id, updateVariacoeDto);
+  @Put(':id')
+  @Roles(Role.ADMIN)
+  public async update(@Param('id') id: string, @Body() updateVariacoeDto: UpdateVariacoeDto) {
+    return await this.variacoesService.update(+id, updateVariacoeDto);
+  }
+
+  @Roles(Role.ADMIN)
+  @Put('imagens/:id')
+  public async uploadImagens(@Param('id') id: string, @Body() updateVariacoeDto: UpdateVariacoeDto) {
+  //  return await this.variacoesService.uploadImagens(+id, updateVariacoeDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.variacoesService.remove(+id);
+  @HttpCode(204)
+  @Roles(Role.ADMIN)
+  public async remove(@Param('id') id: string) {
+    return await this.variacoesService.remove(+id);
   }
 }

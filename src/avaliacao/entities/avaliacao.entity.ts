@@ -1,10 +1,10 @@
-import { Cliente } from "src/clientes/entities/cliente.entity";
 import { Loja } from "src/loja/entities/loja.entity";
 import { Produto } from "src/produto/entities/produto.entity";
 import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export class Avaliacao {
+export class Avaliacao {    
+    
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -14,15 +14,13 @@ export class Avaliacao {
     @Column()
     texto: string;
 
-    @Column()
-    pontuacao: number = 1;
+    @Column({default: 1})
+    pontuacao: number;
 
     @ManyToOne(()=> Produto, produto => produto.avaliacoes)
     produto: Produto;
 
-    @OneToOne(() => Loja, loja => loja.avaliacao)
+    @ManyToOne(() => Loja, loja => loja.avaliacoes)
     loja: Loja;
 
-    @ManyToOne(()=> Cliente, cliente => cliente.avaliacoes)
-    cliente: Cliente;
 }
