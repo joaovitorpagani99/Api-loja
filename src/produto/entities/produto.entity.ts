@@ -20,8 +20,8 @@ export class Produto {
     @Column()
     descricao: string;
 
-    @Column()
-    imagens: string;
+    @Column({ nullable: true })
+    foto: string;
 
     @Column()
     preco: number;

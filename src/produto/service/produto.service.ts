@@ -7,6 +7,7 @@ import { UpdateProdutoDto } from '../dto/update-produto.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Produto } from '../entities/produto.entity';
 import { Like, Repository } from 'typeorm';
+import { Express } from 'express';
 
 @Injectable()
 export class ProdutoService {
@@ -17,6 +18,20 @@ export class ProdutoService {
     private readonly lojaService: LojaService,
     private readonly CategoriaService: CategoriaService,
   ) { }
+
+
+  async uploadFile(file: Express.MulterS3.File, idProduto: number) {
+    try {
+      console.log(file)
+      const produto = await this.findById(idProduto);
+      produto.foto = file.location;
+      await this.produtoRepository.save(produto);
+      console.log(produto.foto)
+      return produto.foto;
+    } catch (error) {
+      throw new BadRequestException("Erro ao salvar imagem.");
+    }
+  }
 
   async create(createProdutoDto: CreateProdutoDto) {
     const loja = await this.lojaService.findById(createProdutoDto.idLoja);
@@ -85,7 +100,7 @@ export class ProdutoService {
   public async findVariacoes(idProdutos: number) {
     try {
       const produto = await this.findById(idProdutos);
-      if(produto.variacoes.length == 0){
+      if (produto.variacoes.length == 0) {
         return "Não há variacoes para este produto.";
       }
       return await produto.variacoes
@@ -96,7 +111,7 @@ export class ProdutoService {
   public async findAvaliacoes(idProdutos: number) {
     try {
       const produto = await this.findById(idProdutos);
-      if(produto.avaliacoes.length == 0){
+      if (produto.avaliacoes.length == 0) {
         return "Não há avaliações para este produto.";
       }
       return await produto.avaliacoes;
