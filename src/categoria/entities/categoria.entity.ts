@@ -4,18 +4,22 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "ty
 
 @Entity()
 export class Categoria {
+    
     @PrimaryGeneratedColumn()
     id: number;
+    
     @Column()
     nome: string;
-    @Column()
+    
+    @Column({ unique: true})
     codigo: string;
+    
     @Column()
     disponibilidade: boolean;
 
     @OneToMany(() => Produto, produto => produto.categoria)
     produtos: Produto[];
 
-    @ManyToOne(() => Loja, loja => loja.categorias)
+    @ManyToOne(() => Loja, loja => loja.categorias,{ onDelete: 'CASCADE' })
     loja: Loja;
 }

@@ -1,19 +1,16 @@
-import { IsBoolean, IsString } from "class-validator";
-import { Loja } from "src/loja/entities/loja.entity";
-import { Produto } from "src/produto/entities/produto.entity";
+import { IsBoolean, IsNumber, IsString } from "class-validator";
 
 export class CreateCategoriaDto {
     
     @IsString()
-    nome?: string;
+    nome: string;
 
     @IsString()
-    codigo?: string;
+    codigo: string;
 
     @IsBoolean()
-    disponibilidade?: boolean;
+    disponibilidade: boolean;
 
-    produtos?: Produto[];
-    
-    loja?: Loja;
+    @IsNumber()
+    idLoja: number;
 }

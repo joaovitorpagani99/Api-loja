@@ -1,15 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsEnum, IsNumber, IsString, Matches, MaxLength, MinLength } from "class-validator";
+import { IsEmail, IsEnum, IsNumber, IsOptional, IsString, Matches, MaxLength, MinLength } from "class-validator";
 import {  Role  } from "../Enum/role-enum";
 export class CreateUsuarioDto {
 
     @ApiProperty()
     @IsString()
-    nome?: string;
+    nome: string;
     
     @ApiProperty()
     @IsEmail()
-    email?: string;
+    email: string;
 
     @ApiProperty()
     @IsString()
@@ -19,14 +19,14 @@ export class CreateUsuarioDto {
     //  message: 'Senha muito fraca',
     //})
     @IsString()
-    senha?: string;
+    senha: string;
     
     @ApiProperty()
     @IsNumber()
-    idade?: Number;
+    idade: Number;
 
     @ApiProperty()
     @IsEnum(Role)
-    permissao?: Role;
-
+    @IsOptional()
+    permissao: Role;
 }

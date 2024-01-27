@@ -12,7 +12,7 @@ export class PedidoService {
     return `This action returns all pedido`;
   }
 
-  findOne(id: number) {
+  findById(id: number) {
     return `This action returns a #${id} pedido`;
   }
 

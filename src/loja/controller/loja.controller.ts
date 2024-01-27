@@ -19,13 +19,13 @@ export class LojaController {
 
   @Get()
   @Roles(Role.ADMIN)
-  public async findById() {
+  public async findAll() {
     return await this.lojaService.findAll();
   }
 
   @Get(':id')
   @Roles(Role.ADMIN)
-  public async findOne(@Param('id') id: string) {
+  public async findById(@Param('id') id: string) {
     return await this.lojaService.findById(+id);
   }
 

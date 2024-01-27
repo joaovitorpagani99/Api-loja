@@ -23,6 +23,7 @@ import { Avaliacao } from './avaliacao/entities/avaliacao.entity';
 import { Entrega } from './entrega/entities/entrega.entity';
 import { Produto } from './produto/entities/produto.entity';
 import { Variacoes } from './variacoes/entities/variacoe.entity';
+import { RegistroPedido } from './pedido/entities/registroPedido';
 
 @Module({
   imports: [
@@ -35,28 +36,28 @@ import { Variacoes } from './variacoes/entities/variacoe.entity';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       entities: [
-        Usuario, Loja, Cliente, Categoria, Pagamento, Pedido, Avaliacao, Entrega, Produto, Variacoes
-       ],
-      synchronize: process.env.NODE_ENV !== 'production', 
+        Usuario, Loja, Cliente, Categoria, Pagamento, Pedido, Avaliacao, Entrega, Produto, Variacoes, RegistroPedido
+      ],
+      synchronize: true,
+      keepConnectionAlive: true,
       extra: {
-          trustServerCertificate: true,  // confiar no certificado do servidor
-          Encrypt: true,  // habilitar criptografia
-          IntegratedSecurity: false, // desabilitar segurança integrada
-      }, 
+        trustServerCertificate: true,
+        Encrypt: true,
+        IntegratedSecurity: false,
+      },
     }),
     AuthModule,
     UsuarioModule,
     LojaModule,
     ClientesModule,
+    CategoriaModule, 
+    ProdutoModule,
     PedidoModule,
     PagamentoModule,
-    ProdutoModule,
-    CategoriaModule,
     AvaliacaoModule,
     VariacoesModule,
     EntregaModule,
   ],
   controllers: [AppController],
-  providers: [],
 })
 export class AppModule { }

@@ -1,23 +1,28 @@
 import { Loja } from "src/loja/entities/loja.entity";
 import { Pedido } from "src/pedido/entities/pedido.entity";
-import { Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Pagamento {
+    
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column()
     valor: number;
 
+    @Column()
     formaPagamento: string;
 
-    parcelado: boolean;
+    @Column()
+    parcelado: string;
 
+    @Column()
     status: string;
 
     @OneToOne(() => Pedido, pedido => pedido.pagamento)
     pedido: Pedido
 
-    @ManyToOne(() => Loja, loja => loja.pagamentos)
+    @ManyToOne(() => Loja, loja => loja.pagamentos,{ onDelete: 'CASCADE' })
     loja: Loja;
 }

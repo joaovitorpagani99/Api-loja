@@ -1,29 +1,31 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsString } from "class-validator";
+import { IsEmail, IsNumber, IsOptional, IsString } from "class-validator";
 import { Usuario } from "src/usuario/entities/usuario.entity";
 
 export class CreateLojaDto {
 
     @ApiProperty()
     @IsString()
-    nome?: string;
+    nome: string;
 
     @ApiProperty()
     @IsString()
-    cnpj?: string;
+    cnpj: string;
 
     @ApiProperty()
     @IsEmail()
-    email?: string;
+    email: string;
     
     @ApiProperty()
     @IsString()
+    @IsOptional()
     telefone?: string;
 
     @ApiProperty()
     @IsString()
-    endereco ?: string;
+    endereco: string;
 
     @ApiProperty()
-    usuario?: Usuario;
+    @IsNumber()
+    idUsuario: number;
 }

@@ -15,44 +15,45 @@ export class CategoriaController {
   @Post()
   @Roles(Role.ADMIN)
   public async create(@Body() createCategoriaDto: CreateCategoriaDto) {
-    return this.categoriaService.create(createCategoriaDto);
+    return await this.categoriaService.create(createCategoriaDto);
   }
 
   @Get()
-  public async findAll(@Query('loja') loja: string) {
-    return this.categoriaService.findAll(loja);
+  public async findAll(@Query('idLoja') idLoja: string) {
+    return await this.categoriaService.findAll(+idLoja);
   }
 
-  @Get('disponiveis')
-  public async findDisponiveis(@Query('loja') loja: string) {
-    return this.categoriaService.getCategoriasDisponivel(loja);
+  @Get('/disponiveis')
+  public async findDisponiveis(@Query('idLoja') idLoja: string) {
+    return await this.categoriaService.getCategoriasDisponivel(idLoja);
   }
 
   @Get(':id')
-  public async findById(@Query('loja') loja: string, @Param('id') id: string) {
-    return this.categoriaService.findById(loja, +id);
+  public async findById(@Query('idLoja') idLoja: string, @Param('id') id: string) {
+    return await this.categoriaService.findById(idLoja, +id);
   }
 
   @Put(':id')
   @Roles(Role.ADMIN)
   public async update(@Param('id') id: string,
     @Body() updateCategoriaDto: UpdateCategoriaDto) {
-    return this.categoriaService.update(+id, updateCategoriaDto);
+    return await this.categoriaService.update(+id, updateCategoriaDto);
   }
 
   @Delete(':id')
   @Roles(Role.ADMIN)
   public async remove(@Param('id') id: string) {
-    return this.categoriaService.remove(+id);
+    return await this.categoriaService.remove(+id);
   }
 
-  /*@Get(':id/produtos')
-  public async showProdutos(@Param('id') id: string, @Query('offset') offset: number, @Query('limit') limit: number) {
-    return this.categoriaService.(id, offset, limit);
+  @Get(':id/produtos')
+  public async showProdutos(@Param('id') id: string) {
+    return await this.categoriaService.mostrarProdutosPorIdCategoria(+id);
   }
 
   @Put(':id/produtos')
   public async updateProdutos(@Param('id') id: string, @Body('produtos') produtos: string[]) {
-    return this.categoriaService.updateProdutos(id, produtos);
-  }*/
+    return await this.categoriaService.updateProdutos(+id, produtos);
+  }
+
 }
