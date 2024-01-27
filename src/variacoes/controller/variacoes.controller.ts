@@ -47,6 +47,6 @@ export class VariacoesController {
   @HttpCode(204)
   @Roles(Role.ADMIN)
   public async remove(@Param('id') id: string) {
-    return await this.variacoesService.remove(+id);
+     await this.variacoesService.remove(+id);
   }
 }

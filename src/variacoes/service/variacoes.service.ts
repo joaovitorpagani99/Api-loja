@@ -54,7 +54,7 @@ export class VariacoesService {
     return variacoes;
   }
 
-  async findById(id: number) {
+  async findById(id: number): Promise<Variacoes> {
     try {
       const variacao = await this.variacoesRepository.findOne({
         where: { id },
@@ -95,13 +95,9 @@ export class VariacoesService {
   }
 
   public async remove(id: number) {
-    const variacao = await this.findById(id);
-    console.log(variacao);
-
-    try {
-      await this.variacoesRepository.delete(id);
-    } catch (error) {
-      throw new BadRequestException(error.message);
+    const result = await this.variacoesRepository.delete(id);
+    if(result.affected === 0){
+      throw new NotFoundException('Variação não encontrada');
     }
   }
 

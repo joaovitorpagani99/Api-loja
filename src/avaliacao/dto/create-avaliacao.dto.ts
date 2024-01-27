@@ -12,4 +12,7 @@ export class CreateAvaliacaoDto {
     
     @IsNumber()
     idProduto: number;
+
+    @IsNumber() 
+    idLoja: number;
 }
