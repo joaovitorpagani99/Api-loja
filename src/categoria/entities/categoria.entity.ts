@@ -4,12 +4,16 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "ty
 
 @Entity()
 export class Categoria {
+    
     @PrimaryGeneratedColumn()
     id: number;
+    
     @Column()
     nome: string;
-    @Column()
+    
+    @Column({ unique: true})
     codigo: string;
+    
     @Column()
     disponibilidade: boolean;
 

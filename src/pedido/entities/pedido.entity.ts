@@ -1,6 +1,6 @@
 import { Entrega } from 'src/entrega/entities/entrega.entity';
 import { Pagamento } from './../../pagamento/entities/pagamento.entity';
-import { Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Cliente } from 'src/clientes/entities/cliente.entity';
 import { Produto } from 'src/produto/entities/produto.entity';
 import { Loja } from 'src/loja/entities/loja.entity';
@@ -30,13 +30,13 @@ export class Pedido {
     @OneToOne(() => Entrega, entrega => entrega.pedido)
     entrega: Entrega;
 
-    @ManyToMany(()=> Produto, produtos => produtos.pedidos)
+    @ManyToMany(() => Produto, produto => produto.pedidos)
     produtos: Produto[];
 
     @OneToMany(() => Variacoes, variacoes => variacoes.pedido)
     variacoes: Variacoes[];
 
-    @ManyToOne(()=> Loja, loja => loja.pedidos)
+    @ManyToOne(() => Loja, loja => loja.pedidos)
     loja: Loja;
 
     @OneToMany(() => RegistroPedido, registroPedido => registroPedido.pedido)

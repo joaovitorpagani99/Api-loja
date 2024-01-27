@@ -11,48 +11,48 @@ import { Pagamento } from 'src/pagamento/entities/pagamento.entity';
 @Entity()
 export class Loja {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({nullable: false})
-    nome: string;
+  @Column({ nullable: false })
+  nome: string;
 
-    @Column({nullable: false})
-    cnpj: string;
+  @Column({ nullable: false })
+  cnpj: string;
 
-    @Column({nullable: false, unique:true})
-    email: string;
+  @Column({ nullable: false, unique: true })
+  email: string;
 
-    @Column()
-    telefone: string;
+  @Column()
+  telefone: string;
 
-    @Column()
-    endereco: string;
+  @Column()
+  endereco: string;
 
-    @OneToMany(() => Produto, produto => produto.loja)
-    produtos: Produto[];
+  @OneToMany(() => Produto, produto => produto.loja)
+  produtos: Produto[];
 
-    @OneToMany(() => Avaliacao, avaliacao => avaliacao.loja)
-    avaliacoes: Avaliacao[];
+  @OneToMany(() => Avaliacao, avaliacao => avaliacao.loja)
+  avaliacoes: Avaliacao[];
 
-    @OneToMany(() => Pedido, pedidos => pedidos.loja)
-    pedidos: Pedido[];
+  @OneToMany(() => Pedido, pedidos => pedidos.loja)
+  pedidos: Pedido[];
 
-    @ManyToOne(() => Usuario, usuario => usuario.loja, {
-        onDelete: 'CASCADE'
-      })
-    administrador: Usuario;
+  @ManyToOne(() => Usuario, usuario => usuario.loja, {
+    onDelete: 'CASCADE'
+  })
+  administrador: Usuario;
 
-    @ManyToMany(() => Cliente, cliente => cliente.lojas)
-    clientes: Cliente[];
+  @ManyToMany(() => Cliente, cliente => cliente.lojas)
+  clientes: Cliente[];
 
-    @OneToMany(() => Categoria, categoria => categoria.loja)
-    categorias: Categoria[];
+  @OneToMany(() => Categoria, categoria => categoria.loja)
+  categorias: Categoria[];
 
-    @OneToOne(() => Entrega, entrega => entrega.loja)
-    entrega: Entrega;
+  @OneToOne(() => Entrega, entrega => entrega.loja)
+  entrega: Entrega;
 
-    @OneToMany(() => Pagamento, pagamento => pagamento.loja)
-    pagamentos: Pagamento[];
+  @OneToMany(() => Pagamento, pagamento => pagamento.loja)
+  pagamentos: Pagamento[];
 
 }

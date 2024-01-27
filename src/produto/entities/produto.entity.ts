@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Categoria } from "src/categoria/entities/categoria.entity";
 import {  Variacoes } from 'src/variacoes/entities/variacoe.entity';
 import { Avaliacao } from 'src/avaliacao/entities/avaliacao.entity';
@@ -36,7 +36,7 @@ export class Produto {
         onDelete: 'CASCADE'
     })
     categoria: Categoria;
-
+    
     @ManyToOne(() => Loja, loja => loja.produtos, {
         onDelete: 'CASCADE'
       })

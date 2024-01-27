@@ -47,7 +47,7 @@ export class LojaService {
       }
       return Promise.all(lojas.map(loja => loja));
     }).catch(() => {
-      throw new NotFoundException('Nenhuma loja encontrada');
+      throw new BadRequestException('Nenhuma loja encontrada');
     });
   }
 

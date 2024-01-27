@@ -1,3 +1,4 @@
+import { CategoriaService } from './../../categoria/service/categoria.service';
 import { LojaService } from './../../loja/service/loja.service';
 import { Loja } from 'src/loja/entities/loja.entity';
 import { BadRequestException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
@@ -13,32 +14,39 @@ export class ProdutoService {
   constructor(
     @InjectRepository(Produto)
     private readonly produtoRepository: Repository<Produto>,
-  ) {}
+    private readonly lojaService: LojaService,
+    private readonly CategoriaService: CategoriaService,
+  ) { }
 
   async create(createProdutoDto: CreateProdutoDto) {
-    /*const loja = await this.lojaService.findById(createProdutoDto.idLoja);
+    const loja = await this.lojaService.findById(createProdutoDto.idLoja);
+    const categoria = await this.CategoriaService.findById(createProdutoDto.idLoja.toString() ,createProdutoDto.categoriaId);
 
     if (!loja) {
       throw new NotFoundException('Loja não encontrada');
-    }*/
+    }
 
-    await this.produtoRepository.save(createProdutoDto).then((produto) => {
+    try {
+      const produto = await this.produtoRepository.save({
+        ...createProdutoDto,
+        loja,
+        categoria
+      });
       return produto;
-    }).catch((err) => {
-      console.log(err);
+    } catch (error) {
       throw new BadRequestException("Erro ao salvar produto.");
-    });
+    }
   }
 
   async findAll(idLoja: string): Promise<Produto[]> {
-  /*  const loja: Loja = await this.lojaService.findById(+idLoja);
+    const loja: Loja = await this.lojaService.findById(+idLoja);
 
     if (loja == null) {
       throw new NotFoundException('Nenhum loja com esse id.');
-    }*/
+    }
 
     const produtos = await this.produtoRepository.find({
-      relations: ['categoria', 'loja', 'variacoes', 'avaliacoes', 'pedido'],
+      relations: ['categoria', 'loja', 'variacoes', 'avaliacoes'],
     });
 
     if (produtos.length === 0) {
@@ -96,7 +104,7 @@ export class ProdutoService {
 
   async remove(id: number) {
     const result = await this.produtoRepository.delete(id);
-  
+
     if (result.affected === 0) {
       throw new NotFoundException(`Produto com id ${id} não encontrado`);
     }

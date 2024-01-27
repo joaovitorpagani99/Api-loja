@@ -20,6 +20,8 @@ export class CreateProdutoDto {
     preco: number;
 
     @IsNumber()
+    @IsPositive()
+    @IsOptional()
     promocao: number;
 
     @IsString()
