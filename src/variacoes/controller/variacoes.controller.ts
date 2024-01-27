@@ -1,15 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, HttpCode, Put, Query, UploadedFile, UseInterceptors, Request, Req, UploadedFiles } from '@nestjs/common';
 import { VariacoesService } from '../service/variacoes.service';
 import { CreateVariacoeDto } from '../dto/create-variacoe.dto';
 import { UpdateVariacoeDto } from '../dto/update-variacoe.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorator/roles.decorator';
 import { Role } from 'src/usuario/Enum/role-enum';
+import multerConfig from 'src/config/multer-config';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @Controller('variacoes')
 @ApiTags('variacoes')
 export class VariacoesController {
-  constructor(private readonly variacoesService: VariacoesService) {}
+  constructor(private readonly variacoesService: VariacoesService) { }
+
+  @Roles(Role.ADMIN)
+  @Post('imagens')
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'arquivos' }], multerConfig))
+  public async uploadDeVariasImagens(@Query('idVariacoes') idVariacoes: string, @UploadedFiles() files: { arquivos: Express.MulterS3.File[] }) {
+    return await this.variacoesService.uploadImagens(+idVariacoes, files['arquivos']);
+  }
+
 
   @Post()
   @Roles(Role.ADMIN)
@@ -18,8 +28,8 @@ export class VariacoesController {
   }
 
   @Get()
-  public async findAll() {
-    return await this.variacoesService.findAll();
+  public async findAll(@Query('idProduto') idProduto: string) {
+    return await this.variacoesService.findAll(idProduto);
   }
 
   @Get(':id')
@@ -31,12 +41,6 @@ export class VariacoesController {
   @Roles(Role.ADMIN)
   public async update(@Param('id') id: string, @Body() updateVariacoeDto: UpdateVariacoeDto) {
     return await this.variacoesService.update(+id, updateVariacoeDto);
-  }
-
-  @Roles(Role.ADMIN)
-  @Put('imagens/:id')
-  public async uploadImagens(@Param('id') id: string, @Body() updateVariacoeDto: UpdateVariacoeDto) {
-  //  return await this.variacoesService.uploadImagens(+id, updateVariacoeDto);
   }
 
   @Delete(':id')

@@ -1,15 +1,26 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, HttpStatus, HttpCode, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, HttpStatus, HttpCode, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { ProdutoService } from '../service/produto.service';
 import { CreateProdutoDto } from '../dto/create-produto.dto';
 import { UpdateProdutoDto } from '../dto/update-produto.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Role } from 'src/usuario/Enum/role-enum';
 import { Roles } from 'src/auth/decorator/roles.decorator';
+import { FileInterceptor } from '@nestjs/platform-express';
+import multerConfig from 'src/config/multer-config';
 
 @Controller('produto')
 @ApiTags('produto')
 export class ProdutoController {
   constructor(private readonly produtoService: ProdutoService) { }
+
+  @Post()
+  @Roles(Role.ADMIN)
+  @UseInterceptors(FileInterceptor('arquivo', multerConfig))
+  async uploadArquivo(@Query('idProduto')idProduto: string, @UploadedFile() file: Express.MulterS3.File) {
+    console.log('idProduto:', file);
+    return await this.produtoService.uploadFile(file, +idProduto);
+  }
+
 
   @Get(':id/avaliacoes')
   public async showAvaliacoes(@Param('id') id: string) {
@@ -59,14 +70,7 @@ export class ProdutoController {
     return await this.produtoService.update(+id, updateProdutoDto);
   }
 
-  @Put('imagens/:id')
-  @Roles(Role.ADMIN)
-  public async uploadImagens(
-    @Param('id') id: string,
-    @Body() updateProdutoDto: UpdateProdutoDto) {
-    return null;
-  }
-
+ 
   @Delete(':id')
   @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)

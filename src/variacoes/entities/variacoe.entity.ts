@@ -1,6 +1,7 @@
 import { Pedido } from "src/pedido/entities/pedido.entity";
 import { Produto } from "src/produto/entities/produto.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Imagem } from "./imagem.entity";
 
 @Entity()
 export class Variacoes {
@@ -16,8 +17,6 @@ export class Variacoes {
     @Column()
     promocao: number;
 
-    fotos: string[];
-
     @Column()
     entrega: string;
 
@@ -26,6 +25,8 @@ export class Variacoes {
 
     @ManyToOne(() => Pedido, pedido => pedido.variacoes, { onDelete: 'CASCADE' })
     pedido: Pedido;
+    @OneToMany(() => Imagem, imagem => imagem.variacoes)
+    imagens: Imagem[];
 
     @CreateDateColumn()
     createdAt: Date;
