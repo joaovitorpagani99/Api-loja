@@ -18,7 +18,7 @@ export class AvaliacaoService {
   async create(createAvaliacaoDto: CreateAvaliacaoDto) {
     const produto = await this.produtoService.findById(+createAvaliacaoDto.idProduto);
 
-    if (!produto) {
+    if (produto === null || produto === undefined) {
       throw new BadRequestException('Produto não encontrado');
     }
 

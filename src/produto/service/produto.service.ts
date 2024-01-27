@@ -20,11 +20,7 @@ export class ProdutoService {
 
   async create(createProdutoDto: CreateProdutoDto) {
     const loja = await this.lojaService.findById(createProdutoDto.idLoja);
-    const categoria = await this.CategoriaService.findById(createProdutoDto.idLoja.toString() ,createProdutoDto.categoriaId);
-
-    if (!loja) {
-      throw new NotFoundException('Loja não encontrada');
-    }
+    const categoria = await this.CategoriaService.findById(createProdutoDto.idLoja.toString(), createProdutoDto.categoriaId);
 
     try {
       const produto = await this.produtoRepository.save({
@@ -32,7 +28,9 @@ export class ProdutoService {
         loja,
         categoria
       });
-      return produto;
+
+      const { loja: _, categoria: __, ...produtoSemLojaECategoria } = produto;
+      return produtoSemLojaECategoria;
     } catch (error) {
       throw new BadRequestException("Erro ao salvar produto.");
     }
@@ -56,19 +54,27 @@ export class ProdutoService {
     return produtos;
   }
   async findById(id: number) {
-    const produto = await this.produtoRepository.findOne({
-      where: { id },
-      relations: ['categoria', 'loja', 'variacoes', 'avaliacoes', 'pedido'],
-    });
-    if (!produto) throw new NotFoundException("Produto não encontrado.");
-    return produto;
+    try {
+      const produto = await this.produtoRepository.findOne({
+        where: { id },
+        relations: ['categoria', 'loja', 'variacoes', 'avaliacoes'],
+      });
+      if (!produto) throw new NotFoundException("Produto não encontrado.");
+      return produto;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new BadRequestException("Erro ao buscar produto.");
+    }
+
 
   }
 
   async findByPesquisa(search: string) {
-    return this.produtoRepository.find({
+    return await this.produtoRepository.find({
       where: { titulo: Like(`%${search}%`) },
-      relations: ['categoria', 'loja', 'variacoes', 'avaliacoes', 'pedido'],
+      relations: ['categoria', 'loja', 'variacoes', 'avaliacoes'],
     }).then((produto) => {
       return produto;
     }).catch((err) => {
@@ -76,27 +82,55 @@ export class ProdutoService {
     });
   }
 
+  public async findVariacoes(idProdutos: number) {
+    try {
+      const produto = await this.findById(idProdutos);
+      if(produto.variacoes.length == 0){
+        return "Não há variacoes para este produto.";
+      }
+      return await produto.variacoes
+    } catch (error) {
+      throw new BadRequestException("Erro em buscar Variações desse Produto.")
+    }
+  }
+  public async findAvaliacoes(idProdutos: number) {
+    try {
+      const produto = await this.findById(idProdutos);
+      if(produto.avaliacoes.length == 0){
+        return "Não há avaliações para este produto.";
+      }
+      return await produto.avaliacoes;
+    } catch (error) {
+      throw new BadRequestException("Erro em buscar avaliações desse Produto.")
+    }
+  }
+
 
   async findByDisponiveis(idLoja: number) {
-    /*const loja = await this.lojaService.findById(idLoja);
-    if (!loja) throw new NotFoundException("Loja não encontrada.");*/
-    const produtos = await this.produtoRepository.find({
-      where: {
-        disponibilidade: true,
-      },
-      relations: ['categoria', 'loja', 'variacoes', 'avaliacoes', 'pedido'],
-    });
+    const loja = await this.lojaService.findById(idLoja);
+    try {
+      const produtos = await this.produtoRepository.find({
+        where: {
+          disponibilidade: true,
+        },
+        relations: ['categoria', 'loja', 'variacoes', 'avaliacoes'],
+      });
 
-    if (produtos.length === 0) {
-      throw new NotFoundException("Não tem produto disponivel.");
+      if (produtos.length === 0) {
+        throw new NotFoundException("Não tem produto disponivel.");
+      }
+
+      return produtos;
+    } catch (error) {
+      if (error instanceof NotFoundException) return error;
+      throw new BadRequestException("Erro em buscar disponiveis")
     }
 
-    return produtos;
   }
 
   async update(id: number, updateProdutoDto: UpdateProdutoDto) {
-    return this.produtoRepository.update(id, updateProdutoDto).then(() => {
-      return this.findById(id);
+    return await this.produtoRepository.update(id, updateProdutoDto).then(async () => {
+      return await this.findById(id);
     }).catch(() => {
       throw new BadRequestException("Erro ao atualizar produto.");
     });
@@ -110,21 +144,3 @@ export class ProdutoService {
     }
   }
 }
-
-/*
-async create(createProdutoDto: CreateProdutoDto): Promise<Produto> {
-  const produto = new Produto();
-  // Atribui os valores do DTO ao produto
-  produto.titulo = createProdutoDto.titulo;
-  // ...
-
-  // Busca as variações e as associa ao produto
-  if (createProdutoDto.variacoesIds) {
-      produto.variacoes = await Promise.all(
-          createProdutoDto.variacoesIds.map(id => this.variacoesRepository.findOne(id))
-      );
-  }
-
-  return this.produtoRepository.save(produto);
-}
-*/
