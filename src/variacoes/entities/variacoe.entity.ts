@@ -25,6 +25,7 @@ export class Variacoes {
 
     @ManyToOne(() => Pedido, pedido => pedido.variacoes, { onDelete: 'CASCADE' })
     pedido: Pedido;
+    
     @OneToMany(() => Imagem, imagem => imagem.variacoes)
     imagens: Imagem[];
 

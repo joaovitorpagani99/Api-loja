@@ -12,11 +12,13 @@ export class AvaliacaoService {
 
   constructor(
     @InjectRepository(Avaliacao) private avaliacaoRepository: Repository<Avaliacao>,
-    private produtoService: ProdutoService
+    private produtoService: ProdutoService,
+    private lojaService: LojaService
   ) { }
 
-  async create(createAvaliacaoDto: CreateAvaliacaoDto) {
+  async create(createAvaliacaoDto: CreateAvaliacaoDto): Promise<Avaliacao> {
     const produto = await this.produtoService.findById(+createAvaliacaoDto.idProduto);
+    const loja = await this.lojaService.findById(+createAvaliacaoDto.idLoja);
 
     if (produto === null || produto === undefined) {
       throw new BadRequestException('Produto não encontrado');
@@ -25,10 +27,10 @@ export class AvaliacaoService {
     try {
       const avaliacao = this.avaliacaoRepository.create({
         ...createAvaliacaoDto,
-        produto: produto
+        produto: produto,
+        loja: loja
       });
 
-      console.log(avaliacao);
       const savedAvaliacao = await this.avaliacaoRepository.save(avaliacao);
 
       return savedAvaliacao;
@@ -38,14 +40,15 @@ export class AvaliacaoService {
     }
   }
 
-  async findAll() {
+  async findAll(idLoja: number): Promise<Avaliacao[]> {
+    const loja = await this.lojaService.findById(idLoja);
     try {
       const avaliacoes = await this.avaliacaoRepository.find(
         {
+          where: { loja: { id: +idLoja } },
           relations: ['produto', 'loja']
         }
       );
-      console.log(avaliacoes);
       return avaliacoes;
     } catch (error) {
       throw new NotFoundException("Não tem avaliações para essa produto");
@@ -57,7 +60,7 @@ export class AvaliacaoService {
       where: {
         id: +idAvaliacao
       },
-      relations: ['produto']
+      relations: ['produto','loja']
     });
     if (!avaliacao) {
       throw new NotFoundException("Avaliação não encontrada");
@@ -65,12 +68,12 @@ export class AvaliacaoService {
     return avaliacao;
   }
 
-  async update(idLoja: number, updateAvaliacaoDto: UpdateAvaliacaoDto) {
-    const avaliacao = await this.avaliacaoRepository.update(idLoja, updateAvaliacaoDto);
+  async update(idAvaliacao: number, updateAvaliacaoDto: UpdateAvaliacaoDto) {
+    const avaliacao = await this.avaliacaoRepository.update(idAvaliacao, updateAvaliacaoDto);
     if (avaliacao.affected === 0) {
       throw new NotFoundException("Avaliação não encontrada");
     }
-    return this.findById(idLoja.toString());
+    return this.findById(idAvaliacao.toString());
   }
 
   async remove(idLoja: number) {

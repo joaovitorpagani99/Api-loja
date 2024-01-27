@@ -6,8 +6,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { Role } from 'src/usuario/Enum/role-enum';
 import { Roles } from 'src/auth/decorator/roles.decorator';
 
-@Controller('avaliacao')
-@ApiTags('avaliacao')
+@Controller('avaliacoes')
+@ApiTags('avaliacoes')
 export class AvaliacaoController {
   constructor(private readonly avaliacaoService: AvaliacaoService) {}
 
@@ -17,10 +17,8 @@ export class AvaliacaoController {
   }
 
   @Get()
-  public findAll(
-     /* @Query('idLoja', ParseIntPipe) idLoja: number*/
-  ) {
-      return this.avaliacaoService.findAll();
+  public async findAll(@Query('idLoja') idLoja: number) {
+      return await this.avaliacaoService.findAll(idLoja);
   }
 
   @Get(':id')
