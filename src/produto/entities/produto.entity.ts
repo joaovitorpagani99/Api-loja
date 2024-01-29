@@ -4,6 +4,7 @@ import {  Variacoes } from 'src/variacoes/entities/variacoe.entity';
 import { Avaliacao } from 'src/avaliacao/entities/avaliacao.entity';
 import { Pedido } from 'src/pedido/entities/pedido.entity';
 import { Loja } from 'src/loja/entities/loja.entity';
+import { ItemCarrinho } from 'src/carrinho/entities/carrinho.entity';
 
 @Entity()
 export class Produto {
@@ -48,7 +49,7 @@ export class Produto {
     @OneToMany(() => Avaliacao, avaliacao => avaliacao.produto)
     avaliacoes: Avaliacao[];
 
-    @ManyToMany(() => Pedido, pedido => pedido.produtos)
-    pedidos: Pedido[];
+    @OneToMany(() => ItemCarrinho, itemCarrinho => itemCarrinho.produto)
+    itensCarrinho: ItemCarrinho[];
 }
  

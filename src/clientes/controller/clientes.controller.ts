@@ -5,6 +5,7 @@ import { UpdateClienteDto } from '../dto/update-cliente.dto';
 import { Role } from 'src/usuario/Enum/role-enum';
 import { Roles } from 'src/auth/decorator/roles.decorator';
 import { ApiTags } from '@nestjs/swagger';
+import { IsPublic } from 'src/auth/decorator/is-public.decorator';
 
 @Controller('clientes')
 @ApiTags('clientes')
@@ -56,25 +57,25 @@ export class ClientesController {
 
   //CLIENTE
   @Post()
+  @IsPublic()
   public async create(@Body() createClienteDto: CreateClienteDto) {
-    console.log(createClienteDto);
-    return this.clientesService.create(createClienteDto);
+    return await this.clientesService.create(createClienteDto);
   }
 
 
   @Get(':id')
   public async findOne(@Param('id') id: string) {
-    return this.clientesService.findById(id);
+    return await this.clientesService.findById(id);
   }
 
   @Put(':id')
   public async update(@Param('id') id: string, @Body() updateClienteDto: UpdateClienteDto) {
-    return this.clientesService.update(id, updateClienteDto);
+    return await this.clientesService.update(id, updateClienteDto);
   }
 
   @Delete(':id')
   public async remove(@Param('id') id: string) {
-    return this.clientesService.remove(id);
+    return await this.clientesService.remove(id);
   }
 
 }

@@ -53,10 +53,8 @@ export class ClientesService {
 
 
   async create(createClienteDto: CreateClienteDto) {
-    console.log(createClienteDto);
     createClienteDto.deletado = false;
     createClienteDto.permissao = Role.USER;
-    console.log(createClienteDto);
     return await this.clienteRepository.save(createClienteDto).then((cliente) => {
       this.usuarioService.create({
         nome: createClienteDto.nome,
