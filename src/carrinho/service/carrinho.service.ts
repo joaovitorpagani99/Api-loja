@@ -38,20 +38,21 @@ export class CarrinhoService {
     }
   }
 
-  public async findAll(clientId: string) {
+  public async findAll(email: string) {
     const carrinho = await this.carrinhoRepository.find({
-      where: { cliente: { id: clientId } },
+      where: { cliente: { email: email } },
       relations: ['cliente', 'produto', 'variacao'],
     });
+    console.log(carrinho);
     if (carrinho.length === 0) {
       throw new NotFoundException('Nenhum item no carrinho');
     }
     return carrinho;
   }
 
-  public async findById(id: number, clientId: string) {
+  public async findById(id: number, email: string) {
     const carrinho = await this.carrinhoRepository.findOne({
-      where: { id, cliente: { id: clientId } },
+      where: { id, cliente: { email: email } },
       relations: ['cliente', 'produto', 'variacao'],
     });
     if (!carrinho) {
@@ -60,17 +61,16 @@ export class CarrinhoService {
     return carrinho;
   }
 
-  public async update(id: number, updateCarrinhoDto: UpdateCarrinhoDto) {
-    await this.carrinhoRepository.update(id, updateCarrinhoDto).then(async (res) => {
-      if (res.affected === 0) {
-        throw new NotFoundException('Item não encontrado');
-      }
-      console.log(res);
-      return await this.carrinhoRepository.findOne({where: {id}});
-    }).catch((err) => {
-      console.log(err);
-      throw new BadRequestException(err.message);
+  public async update(id: number, updateCarrinhoDto: UpdateCarrinhoDto, email: string) {
+    const carrinhoAt = await this.carrinhoRepository.update(id, updateCarrinhoDto);
+    if (carrinhoAt.affected === 0) {
+      throw new NotFoundException('Item não encontrado');
+    }
+    const carrinho = await this.carrinhoRepository.findOne({
+      where: { id },
+      relations: ['cliente', 'produto', 'variacao'],
     });
+    return carrinho;
   }
 
   public async remove(id: number) {
