@@ -1,4 +1,5 @@
 import { Avaliacao } from "src/avaliacao/entities/avaliacao.entity";
+import { ItemCarrinho } from "src/carrinho/entities/carrinho.entity";
 import { Loja } from "src/loja/entities/loja.entity";
 import { Pedido } from "src/pedido/entities/pedido.entity";
 import { Role } from "src/usuario/Enum/role-enum";
@@ -39,5 +40,8 @@ export class Cliente {
 
     @OneToMany(()=> Pedido, pedidos => pedidos.cliente)
     pedidos: Pedido[];
+
+    @OneToMany(()=> ItemCarrinho, itensCarrinho => itensCarrinho.cliente)
+    itensCarrinho: ItemCarrinho[];
 
 }

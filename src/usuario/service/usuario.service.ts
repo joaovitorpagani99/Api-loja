@@ -75,7 +75,6 @@ export class UsuarioService {
     if (usuario === null) {
       throw new NotFoundException(`Usuario não encontrado para o email ${email}`);
     }
-    delete usuario.senha;
     delete usuario.recoveryToken;
     delete usuario.recoveryDate;
     delete usuario.confirmationToken

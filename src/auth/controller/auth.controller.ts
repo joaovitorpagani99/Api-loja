@@ -17,8 +17,6 @@ export class AuthController {
     private  usuarioService: UsuarioService,
   ) { }
 
-  
-
   @IsPublic()
   @Post("/login")
   @HttpCode(HttpStatus.OK)

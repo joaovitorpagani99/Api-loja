@@ -18,11 +18,10 @@ export class AuthService {
   async signIn(email: string, senha: string) {
     const usuario = await this.usuarioService.findByEmail(email);
     const senhaValida = await this.compareSenhas(senha, usuario.senha);
-    console.log(senhaValida);
     if (!senhaValida) {
       throw new UnauthorizedException();
     }
-    return this.gerarToken(usuario);
+    return await this.gerarToken(usuario);
   }
 
 

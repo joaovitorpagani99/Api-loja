@@ -13,5 +13,6 @@ import { Imagem } from './entities/imagem.entity';
   ] ,
   controllers: [VariacoesController],
   providers: [VariacoesService],
+  exports: [VariacoesService]
 })
 export class VariacoesModule {}

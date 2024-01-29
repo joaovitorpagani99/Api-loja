@@ -53,10 +53,8 @@ export class ClientesService {
 
 
   async create(createClienteDto: CreateClienteDto) {
-    console.log(createClienteDto);
     createClienteDto.deletado = false;
     createClienteDto.permissao = Role.USER;
-    console.log(createClienteDto);
     return await this.clienteRepository.save(createClienteDto).then((cliente) => {
       this.usuarioService.create({
         nome: createClienteDto.nome,
@@ -74,7 +72,7 @@ export class ClientesService {
   async findAll() {
     return this.clienteRepository.find().then((clientes) => {
       return clientes;
-    }).catch(error =>{
+    }).catch(error => {
       throw new NotFoundException('Nenhuma cliente encontrado');
     });
   }
@@ -107,5 +105,13 @@ export class ClientesService {
     }).catch((err) => {
       throw new NotFoundException(`Cliente com id ${id} não encontrado`);
     });
+  }
+
+  async findByEmail(email: string) {
+    const client = await this.clienteRepository.findOne({ where: { email: email } });
+    if (!client) {
+      throw new NotFoundException("Cliente não encontrado");
+    }
+    return client;
   }
 }
