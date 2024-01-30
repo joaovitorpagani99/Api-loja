@@ -2,19 +2,16 @@ import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-val
 
 export class CreatePedidoDto {
 
-    @IsNotEmpty()
-    @IsString()
-    @IsOptional()
-    idCliente: string;
+
+    idPagamento?: number;
+
+
+    idCliente?: number;
   
-    @IsOptional()
-    @IsString()
-    idEntrega: string;
-  
-    @IsNotEmpty()
-    @IsString()
-    @IsOptional()
-    idLoja: string;
-    @IsOptional()
-    idCarrinho: string;
+
+    idEntrega?: number;
+
+    idLoja?: number;
+    
+    idCarrinho?: number;
 }

@@ -1,5 +1,5 @@
 import { Avaliacao } from "src/avaliacao/entities/avaliacao.entity";
-import { ItemCarrinho } from "src/carrinho/entities/carrinho.entity";
+import { Carrinho } from "src/carrinho/entities/carrinho.entity";
 import { Loja } from "src/loja/entities/loja.entity";
 import { Pedido } from "src/pedido/entities/pedido.entity";
 import { Role } from "src/usuario/Enum/role-enum";
@@ -9,7 +9,7 @@ import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "t
 export class Cliente {
 
     @PrimaryGeneratedColumn()
-    id: string;
+    id: number;
 
     @Column()
     nome: string;
@@ -41,7 +41,7 @@ export class Cliente {
     @OneToMany(()=> Pedido, pedidos => pedidos.cliente)
     pedidos: Pedido[];
 
-    @OneToMany(()=> ItemCarrinho, itensCarrinho => itensCarrinho.cliente)
-    itensCarrinho: ItemCarrinho[];
+    @OneToMany(()=> Carrinho, carrinhos => carrinhos.cliente)
+    carrinhos: Carrinho[];
 
 }

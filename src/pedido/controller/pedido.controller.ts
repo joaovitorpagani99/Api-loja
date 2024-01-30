@@ -25,16 +25,14 @@ export class PedidoController {
 
   @Delete('admin/:idPedido')
   @Roles(Role.ADMIN)
-  public async remove(@Param('idPedido') idPedido: string, @Query('idLoja') idLoja: string) {
-    return await this.pedidoService.remove(+idPedido, idLoja);
+  public async remove(@Param('idPedido') idPedido: string) {
+    return await this.pedidoService.remove(+idPedido);
   }
-
-
 
   @Get('cliente/:idCliente')
   @Roles(Role.ADMIN)
   public async todosOsPedidosCliente(@Query('idLoja') idLoja: string, @Param('idCliente') idCliente: string) {
-    return await this.pedidoService.todosOsPedidosCliente(idCliente, idLoja);
+    return await this.pedidoService.todosOsPedidosClienteADMIN(idCliente, idLoja);
 
   }
 
@@ -49,31 +47,27 @@ export class PedidoController {
 
   //adicionar um pedido a um carrinho
   @Post()
-  public async create(@Body() createPedidoDto: CreatePedidoDto, @Request() req){
+  public async create(@Body() createPedidoDto: CreatePedidoDto) {
     return await this.pedidoService.create(createPedidoDto);
   }
 
   //pegar um determinado pedido de um carrinho 
   @Get('carrinho/')
-  public async findByCarrinho(@Request() req,  @Query('idLoja') idLoja: string) {
-    return await this.pedidoService.findByCarrinho(req.user, idLoja);
+  public async findByCarrinho(@Request() req, @Query('idLoja') idLoja: string, @Query('idPedido') idPedido: string) {
+    return await this.pedidoService.pegarUmPedidoEspecifico(req.user.email, idLoja, idPedido);
   }
 
-  @Get()
+  @Get('carrinho/')
   public async findAllCliente(@Request() req, @Query('idLoja') idLoja: string) { //lisyar todos os pedidos do proprio cliente
-    return await this.pedidoService.findByCarrinho(req.user, idLoja);
+    return await this.pedidoService.todosOsPedidosCliente(req.user, idLoja);
   }
 
   //remover um pedido de um carrinho
   @Delete(':id')
-  public async cancelarPedido(@Request() req, @Query('idCliente') idCliente: string){
+  public async cancelarPedido(@Request() req, @Query('idCliente') idCliente: string) {
     return this.pedidoService.cancelarPedidoCliente(req.user, idCliente);
   }
 
-  @Put(':id')
-  public async update(@Param('idPedido') idPedido: string, @Body() updatePedidoDto: UpdatePedidoDto) {
-    return await this.pedidoService.update(+idPedido, updatePedidoDto);
-  }
 
 
 }

@@ -11,5 +11,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   ] ,
   controllers: [EntregaController], 
   providers: [EntregaService],
+  exports: [EntregaService]
 })
 export class EntregaModule {}

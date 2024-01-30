@@ -26,7 +26,8 @@ import { Variacoes } from './variacoes/entities/variacoe.entity';
 import { RegistroPedido } from './pedido/entities/registroPedido';
 import { Imagem } from './variacoes/entities/imagem.entity';
 import { CarrinhoModule } from './carrinho/carrinho.module';
-import { ItemCarrinho } from './carrinho/entities/carrinho.entity';
+import { Carrinho } from './carrinho/entities/carrinho.entity';
+import { CorreiosModule } from './correios/correios.module';
 
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import { ItemCarrinho } from './carrinho/entities/carrinho.entity';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       entities: [
-        Usuario, Loja, Cliente, Categoria, Pagamento, Pedido, Avaliacao, Entrega, Produto, Variacoes, RegistroPedido, Imagem, ItemCarrinho
+        Usuario, Loja, Cliente, Categoria, Pagamento, Pedido, Avaliacao, Entrega, Produto, Variacoes, RegistroPedido, Imagem, Carrinho
       ],
       synchronize: true,
       keepConnectionAlive: true,
@@ -61,6 +62,7 @@ import { ItemCarrinho } from './carrinho/entities/carrinho.entity';
     VariacoesModule,
     EntregaModule,
     CarrinhoModule,
+    CorreiosModule,
   ],
   controllers: [AppController],
 })

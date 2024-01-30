@@ -5,11 +5,20 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Pedido } from './entities/pedido.entity';
 import { RegistroPedido } from './entities/registroPedido';
 import { LojaModule } from 'src/loja/loja.module';
+import { PagamentoModule } from 'src/pagamento/pagamento.module';
+import { ClientesModule } from 'src/clientes/clientes.module';
+import { EntregaModule } from 'src/entrega/entrega.module';
+import { CarrinhoModule } from 'src/carrinho/carrinho.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Pedido, RegistroPedido]),
     LojaModule,
+    PagamentoModule,
+    ClientesModule,
+    EntregaModule,
+    CarrinhoModule,
+
   ],
   controllers: [PedidoController],
   providers: [PedidoService],
