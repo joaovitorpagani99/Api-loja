@@ -70,15 +70,15 @@ export class ClientesService {
   }
 
   async findAll() {
-    return this.clienteRepository.find().then((clientes) => {
-      return clientes;
+    return await this.clienteRepository.find().then(async(clientes) => {
+      return await clientes;
     }).catch(error => {
       throw new NotFoundException('Nenhuma cliente encontrado');
     });
   }
 
   async findById(id: string) {
-    return this.clienteRepository.findOne({ where: { id: id } }).then((cliente) => {
+    return this.clienteRepository.findOne({ where: { id: +id } }).then((cliente) => {
       return cliente;
     }).catch((err) => {
       throw new NotFoundException("Cliente não encontrado");

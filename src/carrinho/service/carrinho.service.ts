@@ -4,7 +4,7 @@ import { CreateCarrinhoDto } from '../dto/create-carrinho.dto';
 import { UpdateCarrinhoDto } from '../dto/update-carrinho.dto';
 import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ItemCarrinho } from '../entities/carrinho.entity';
+import { Carrinho } from '../entities/carrinho.entity';
 import { VariacoesService } from 'src/variacoes/service/variacoes.service';
 import { ProdutoService } from 'src/produto/service/produto.service';
 
@@ -12,8 +12,8 @@ import { ProdutoService } from 'src/produto/service/produto.service';
 export class CarrinhoService {
 
   constructor(
-    @InjectRepository(ItemCarrinho)
-    private carrinhoRepository: Repository<ItemCarrinho>,
+    @InjectRepository(Carrinho)
+    private carrinhoRepository: Repository<Carrinho>,
     private clientesService: ClientesService,
     private produtosService: ProdutoService,
     private variacoesService: VariacoesService
@@ -50,9 +50,9 @@ export class CarrinhoService {
     return carrinho;
   }
 
-  public async findById(id: number, email: string) {
+  public async findById(id: number): Promise<Carrinho> {
     const carrinho = await this.carrinhoRepository.findOne({
-      where: { id, cliente: { email: email } },
+      where: { id },
       relations: ['cliente', 'produto', 'variacao'],
     });
     if (!carrinho) {

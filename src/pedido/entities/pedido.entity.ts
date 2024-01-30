@@ -4,17 +4,18 @@ import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, Prima
 import { Cliente } from 'src/clientes/entities/cliente.entity';
 import { Loja } from 'src/loja/entities/loja.entity';
 import { RegistroPedido } from './registroPedido';
-import { ItemCarrinho } from 'src/carrinho/entities/carrinho.entity';
+import { Carrinho } from 'src/carrinho/entities/carrinho.entity';
 
 @Entity()
 export class Pedido {
+
     @PrimaryGeneratedColumn()
     id: string;
 
     @Column({ default: false })
     cancelado: boolean;
 
-    @ManyToOne(() => Cliente, cliente => cliente.pedidos,  { onDelete: 'CASCADE' })
+    @ManyToOne(() => Cliente, cliente => cliente.pedidos, { onDelete: 'CASCADE' })
     cliente: Cliente;
 
     @OneToOne(() => Pagamento, pagamento => pagamento.pedido)
@@ -23,8 +24,8 @@ export class Pedido {
     @OneToOne(() => Entrega, entrega => entrega.pedido)
     entrega: Entrega;
 
-    @OneToMany(() => ItemCarrinho, itemCarrinho => itemCarrinho.pedido)
-    carrinho: ItemCarrinho[];
+    @OneToOne(() => Carrinho, carrinho => carrinho.pedido)
+    carrinho: Carrinho;
 
     @ManyToOne(() => Loja, loja => loja.pedidos, { onDelete: 'CASCADE' })
     loja: Loja;

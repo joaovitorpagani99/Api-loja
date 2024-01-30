@@ -22,7 +22,7 @@ export class CarrinhoController {
 
   @Get(':id')
   public async findById(@Param('id') id: string, @Req() req: RequestInt) {
-    return await this.carrinhoService.findById(+id, req.user.email);
+    return await this.carrinhoService.findById(+id);
   }
 
   @Put(':id')

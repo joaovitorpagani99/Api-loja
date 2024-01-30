@@ -11,5 +11,6 @@ import { Pagamento } from './entities/pagamento.entity';
   ] ,
   controllers: [PagamentoController],
   providers: [PagamentoService],
+  exports: [PagamentoService]
 })
 export class PagamentoModule {}
