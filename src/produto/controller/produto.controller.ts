@@ -13,6 +13,11 @@ import multerConfig from 'src/config/multer-config';
 export class ProdutoController {
   constructor(private readonly produtoService: ProdutoService) { }
 
+  @Get(':idProduto/correio')
+  public async findPrecoCorreio(@Param('idProduto') idProduto: string, @Query('cep') cep: string){
+    return await this.produtoService.findPrecoCorreio(+idProduto, cep);
+  }
+
   @Post()
   @Roles(Role.ADMIN)
   @UseInterceptors(FileInterceptor('arquivo', multerConfig))

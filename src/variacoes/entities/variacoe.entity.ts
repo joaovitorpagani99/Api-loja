@@ -24,7 +24,7 @@ export class Variacoes {
     larguraCm: number;
     
     @Column()
-    profundidadeCm: number;
+    comprimento: number;
 
     @Column()
     pesoKg: number;
