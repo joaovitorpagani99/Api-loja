@@ -2,7 +2,9 @@ import { Module } from '@nestjs/common';
 import { CorreiosService } from './service/correios.service';
 import { CorreiosController } from './controller/correios.controller';
 import { HttpModule } from '@nestjs/axios';
+import { SoapModule } from 'nestjs-soap';
 
+const CHAVE_CEP_API = process.env.CHAVE_CEPCERTO;
 @Module({
   imports: [
     HttpModule.register({
@@ -12,5 +14,6 @@ import { HttpModule } from '@nestjs/axios';
   ],
   controllers: [CorreiosController],
   providers: [CorreiosService],
+  exports: [CorreiosService],
 })
-export class CorreiosModule {}
+export class CorreiosModule { }

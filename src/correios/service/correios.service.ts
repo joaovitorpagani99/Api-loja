@@ -1,16 +1,20 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { TamanhoProdutoDto } from './../dto/tamanho-produto.dto';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { AxiosError } from 'axios';
 import { ReturnCep } from '../dto/return-cep.dto';
-
 
 @Injectable()
 export class CorreiosService {
 
   URL_CORREIOS = process.env.CEP_API_URL;
+  CEP_COMPANY = process.env.CEP_COMPANY;
+  CHAVE_CEPCERTO = process.env.CHAVE_CEPCERTO;
+  urlBase = process.env.URL_BASE_FRETE;
 
-  constructor(private httpService: HttpService) {
-  }
+  constructor(
+    private httpService: HttpService,
+  ) { }
 
   async findByCep(cep: string): Promise<ReturnCep> {
     if (!cep) {
@@ -32,7 +36,19 @@ export class CorreiosService {
     return returnCep;
   }
 
-
+  async calcularPrecoPrazo(cep, tamanhoProduto: TamanhoProdutoDto): Promise<any> {
+    const url = `${this.urlBase}/${this.CEP_COMPANY}/${cep}/${tamanhoProduto.peso}/${tamanhoProduto.altura}/${tamanhoProduto.largura}/${tamanhoProduto.comprimento}/${this.CHAVE_CEPCERTO}`;
+    return this.httpService.axiosRef
+      .get(url)
+      .then((result) => {
+        return result.data;
+      })
+      .catch((error: AxiosError) => {
+        throw new BadRequestException(
+          `Error in connection request ${error.message}`,
+        );
+      });
+  }
 
 }
 
