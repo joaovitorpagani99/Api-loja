@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Query, Request, HttpCode } from '@nestjs/common';
 import { PedidoService } from '../service/pedido.service';
 import { CreatePedidoDto } from '../dto/create-pedido.dto';
-import { UpdatePedidoDto } from '../dto/update-pedido.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorator/roles.decorator';
 import { Role } from 'src/usuario/Enum/role-enum';
@@ -10,6 +9,12 @@ import { Role } from 'src/usuario/Enum/role-enum';
 @ApiTags('pedido')
 export class PedidoController {
   constructor(private readonly pedidoService: PedidoService) { }
+
+
+  @Post()
+  public async create(@Body() createPedidoDto: CreatePedidoDto) {
+    return await this.pedidoService.create(createPedidoDto);
+  }
 
   @Get()
   @Roles(Role.ADMIN)
@@ -20,52 +25,47 @@ export class PedidoController {
   @Get('admin/:id')
   @Roles(Role.ADMIN)
   public async findById(@Param('idPedido') idPedido: string, @Query('idLoja') idLoja: string) {
-    return await this.pedidoService.findById(+idPedido, idLoja);
+    return await this.pedidoService.findById(idPedido, idLoja);
   }
 
   @Delete('admin/:idPedido')
+  @HttpCode(204)
   @Roles(Role.ADMIN)
-  public async remove(@Param('idPedido') idPedido: string) {
-    return await this.pedidoService.remove(+idPedido);
+  public async remove(@Param('idPedido') idPedido: string, @Body() mensagemCancelamento: string) {
+    return await this.pedidoService.remove(idPedido, mensagemCancelamento);
   }
 
   @Get('cliente/:idCliente')
   @Roles(Role.ADMIN)
-  public async todosOsPedidosCliente(@Query('idLoja') idLoja: string, @Param('idCliente') idCliente: string) {
+  public async todosOsPedidosCliente(@Param('idCliente') idCliente: string, @Query('idLoja') idLoja: string) {
     return await this.pedidoService.todosOsPedidosClienteADMIN(idCliente, idLoja);
 
   }
 
   @Get('cliente/:idPedido/carrinho')
   @Roles(Role.ADMIN)
-  public async pedidoDeUmCarrinho(@Query('idLoja') idLoja: string, @Param('idPedido') idPedido: string) {
-    return await this.pedidoService.pedidoDeUmCarrinho(+idLoja, +idPedido);
+  public async pedidoDeUmCarrinho(@Param('idPedido') idPedido: string, @Query('idLoja') idLoja: string) {
+    return await this.pedidoService.pedidoDeUmCarrinho(+idLoja, idPedido);
   }
 
 
-  //essas rotas sao somente do USUARIO
-
-  //adicionar um pedido a um carrinho
-  @Post()
-  public async create(@Body() createPedidoDto: CreatePedidoDto) {
-    return await this.pedidoService.create(createPedidoDto);
-  }
 
   //pegar um determinado pedido de um carrinho 
-  @Get('carrinho/')
+  @Get('carrinho/pedidoespecifico')
   public async findByCarrinho(@Request() req, @Query('idLoja') idLoja: string, @Query('idPedido') idPedido: string) {
     return await this.pedidoService.pegarUmPedidoEspecifico(req.user.email, idLoja, idPedido);
   }
 
-  @Get('carrinho/')
+  @Get('carrinho/findallPedidio')
   public async findAllCliente(@Request() req, @Query('idLoja') idLoja: string) { //lisyar todos os pedidos do proprio cliente
-    return await this.pedidoService.todosOsPedidosCliente(req.user, idLoja);
+    return await this.pedidoService.todosOsPedidosCliente(req.user.email, idLoja);
   }
 
+
   //remover um pedido de um carrinho
-  @Delete(':id')
-  public async cancelarPedido(@Request() req, @Query('idCliente') idCliente: string) {
-    return this.pedidoService.cancelarPedidoCliente(req.user, idCliente);
+  @Delete(':idPedido')
+  public async cancelarPedido(@Request() req, @Query('idPedido') idPedido: string, @Body() mensagemCancelamento: string) {
+    return this.pedidoService.cancelarPedidoCliente(req.user.email, idPedido, mensagemCancelamento);
   }
 
 

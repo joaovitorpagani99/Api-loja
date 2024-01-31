@@ -70,31 +70,36 @@ export class ClientesService {
   }
 
   async findAll() {
-    return await this.clienteRepository.find().then(async(clientes) => {
+    return await this.clienteRepository.find().then(async (clientes) => {
       return await clientes;
     }).catch(error => {
       throw new NotFoundException('Nenhuma cliente encontrado');
     });
   }
 
-  async findById(id: string) {
-    return this.clienteRepository.findOne({ where: { id: +id } }).then((cliente) => {
+  async findById(id: number): Promise<Cliente> {
+    try {
+      const cliente = await this.clienteRepository.findOne({
+        where: { id },
+      });
+      if (!cliente) throw new NotFoundException('Entrega não encontrada')
+
       return cliente;
-    }).catch((err) => {
-      throw new NotFoundException("Cliente não encontrado");
-    });
+    } catch (error) {
+      throw new BadRequestException('Erro ao buscar cliente.')
+    }
   }
 
   async update(id: string, updateClienteDto: UpdateClienteDto) {
-    return this.clienteRepository.update(id, updateClienteDto).then((cliente) => {
-      return this.findById(id);
+    return await this.clienteRepository.update(id, updateClienteDto).then(async (cliente) => {
+      return await this.findById(+id);
     }).catch(err => {
       throw new NotFoundException(`Cliente com id ${id} não encontrado`);
     });
   }
 
   async remove(id: string) {
-    await this.findById(id).then(async (cliente) => {
+    await this.findById(+id).then(async (cliente) => {
       if (cliente.deletado) {
         throw new BadRequestException("Cliente já deletado");
       }
@@ -108,7 +113,10 @@ export class ClientesService {
   }
 
   async findByEmail(email: string) {
-    const client = await this.clienteRepository.findOne({ where: { email: email } });
+    const client = await this.clienteRepository.findOne({
+      where: { email: email }
+    });
+    console.log(client)
     if (!client) {
       throw new NotFoundException("Cliente não encontrado");
     }

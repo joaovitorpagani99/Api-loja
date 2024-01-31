@@ -25,36 +25,48 @@ export class PedidoService {
   ) { }
 
 
-  public async create(createPedidoDto: CreatePedidoDto) {
-    const loja = await this.lojaService.findById(createPedidoDto.idLoja);
-    const carrinho = await this.carrinhoService.findById(createPedidoDto.idCarrinho);
-    const cliente = await this.clienteService.findById(createPedidoDto.idCliente.toString());
+  public async create(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
+    const loja = await this.lojaService.findById(createPedidoDto.lojaId);
+    const carrinho = await this.carrinhoService.findById(createPedidoDto.carrinhoId);
+    const cliente = await this.clienteService.findById(createPedidoDto.clienteId);
 
-    try {
-      const savedPedido = await this.pedidoRepository.save({
-        ...createPedidoDto,
-        loja: loja,
-        carrinho: carrinho,
-        cliente: cliente,
+    let pedido = new Pedido({
+      loja,
+      carrinho,
+      cliente,
+    });
+
+    return await this.pedidoRepository.save(pedido)
+      .then(async (pedido) => {
+        return this.pedidoRepository.findOne({
+          where: { id: pedido.id.toString() },
+          relations: ['loja', 'pagamento', 'entrega', 'carrinho', 'cliente'],
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        throw new BadRequestException(err.message);
       });
-      return savedPedido;
-    } catch (error) {
-      console.log(error);
-      throw new BadRequestException(error.message);
-    }
   }
+
+
   public async findAll(idLoja: string) {
-    await this.pedidoRepository.findOne({
-      where: { loja: { id: +idLoja } },
+    const loja = await this.lojaService.findById(+idLoja);
+
+    return await this.pedidoRepository.find({
+      where: { loja: { id: loja.id } },
       relations: ['loja', 'pagamento', 'entrega', 'carrinho', 'cliente'],
     }).catch((err) => {
-      throw new NotFoundException(err.message);
+      throw new BadRequestException(err.message);
     });
+
   }
 
-  public async findById(id: number, idLoja: string) {
+  public async findById(id: string, idLoja: string): Promise<Pedido> {
+    const loja = await this.lojaService.findById(+idLoja);
+
     const pedido = await this.pedidoRepository.findOne({
-      where: { id: id.toString(), loja: { id: +idLoja } },
+      where: { id: id, loja: { id: loja.id } },
       relations: ['loja', 'pagamento', 'entrega', 'carrinho', 'cliente'],
     }).catch((err) => {
       throw new BadRequestException(err.message);
@@ -62,6 +74,7 @@ export class PedidoService {
     if (!pedido) {
       throw new NotFoundException('Pedido não encontrado');
     }
+    return pedido;
   }
 
   public async update(id: number, updatePedidoDto: UpdatePedidoDto) {
@@ -73,9 +86,9 @@ export class PedidoService {
     }
   }
 
-  public async remove(id: number) {
+  public async remove(id: string, mensagemCancelamento: string) {
     const pedido = await this.pedidoRepository.findOne({
-      where: { id: id.toString() },
+      where: { id: id },
       relations: ['loja', 'pagamento', 'entrega', 'carrinho', 'cliente'],
     }).catch((err) => {
       throw new BadRequestException(err.message);
@@ -83,7 +96,11 @@ export class PedidoService {
     if (!pedido) {
       throw new NotFoundException('Pedido não encontrado');
     }
+    if (pedido.cancelado) {
+      throw new BadRequestException('Pedido já cancelado');
+    }
     try {
+      pedido.mensagemCancelamento = mensagemCancelamento;
       pedido.cancelado = true;
       await this.pedidoRepository.save(pedido);
     } catch (error) {
@@ -92,10 +109,11 @@ export class PedidoService {
   }
 
 
-  public async cancelarPedidoCliente(idPedido: number, idCliente: string) {
-    const cliente = await this.clienteService.findById(idCliente);
+  public async cancelarPedidoCliente(email: string, idPedido: string, mensagemCancelamento: string) {
+    const cliente = await this.clienteService.findByEmail(email);
+
     const pedido = await this.pedidoRepository.findOne({
-      where: { id: idPedido.toString(), cliente: cliente },
+      where: { id: idPedido, cliente: { id: cliente.id } },
       relations: ['loja', 'pagamento', 'entrega', 'carrinho', 'cliente'],
     }).catch((err) => {
       throw new BadRequestException(err.message);
@@ -103,7 +121,11 @@ export class PedidoService {
     if (!pedido) {
       throw new NotFoundException('Pedido não encontrado');
     }
+    if (pedido.cancelado) {
+      throw new BadRequestException("Pedido ja cancelado.");
+    }
     try {
+      pedido.mensagemCancelamento = mensagemCancelamento;
       pedido.cancelado = true;
       await this.pedidoRepository.save(pedido);
     } catch (error) {
@@ -111,10 +133,11 @@ export class PedidoService {
     }
   }
 
-  public async pedidoDeUmCarrinho(idLoja: number, idPedido: number) {
+  public async pedidoDeUmCarrinho(idLoja: number, idPedido: string) {
     const loja = await this.lojaService.findById(idLoja);
+
     const pedido = await this.pedidoRepository.findOne({
-      where: { id: idPedido.toString(), loja: loja },
+      where: { id: idPedido, loja: { id: loja.id } },
       relations: ['loja', 'pagamento', 'entrega', 'carrinho', 'cliente'],
     }).catch((err) => {
       throw new BadRequestException(err.message);
@@ -123,17 +146,19 @@ export class PedidoService {
     if (!pedido) {
       throw new NotFoundException('Pedido não encontrado');
     }
-    return pedido;
+    const carrinho = await this.carrinhoService.findById(pedido.carrinho.id);
+    return carrinho;
   }
 
-  public async todosOsPedidosClienteADMIN(idCliente: string, idLoja: string) {
-    const cliente = await this.clienteService.findById(idCliente);
+  public async todosOsPedidosClienteADMIN(idCliente: string, idLoja: string): Promise<Pedido[]> {
+    const cliente = await this.clienteService.findById(+idCliente);
     const loja = await this.lojaService.findById(+idLoja);
 
     const findPedidosCliente = await this.pedidoRepository.find({
-      where: { cliente: cliente, loja: loja },
+      where: { cliente: { id: cliente.id }, loja: { id: loja.id } },
       relations: ['loja', 'pagamento', 'entrega', 'carrinho', 'cliente'],
     }).catch((err) => {
+      console.log(err);
       throw new BadRequestException(err.message);
     });
     if (!findPedidosCliente) {
@@ -143,11 +168,12 @@ export class PedidoService {
   }
 
   public async todosOsPedidosCliente(email: string, idLoja: string) {
+    console.log(email, idLoja)
     const cliente = await this.clienteService.findByEmail(email);
     const loja = await this.lojaService.findById(+idLoja);
 
     const findPedidosCliente = await this.pedidoRepository.find({
-      where: { cliente: cliente, loja: loja },
+      where: { cliente: { id: cliente.id }, loja: { id: loja.id } },
       relations: ['loja', 'pagamento', 'entrega', 'carrinho', 'cliente'],
     }).catch((err) => {
       throw new BadRequestException(err.message);
@@ -159,10 +185,13 @@ export class PedidoService {
   }
 
   async pegarUmPedidoEspecifico(email: string, idLoja: string, idPedido: string) {
+
     const loja = await this.lojaService.findById(+idLoja);
+
     const cliente = await this.clienteService.findByEmail(email);
+
     const pedido = await this.pedidoRepository.findOne({
-      where: { id: idPedido, loja: loja, cliente: cliente },
+      where: { id: idPedido, loja: { id: loja.id }, cliente: { id: cliente.id } },
       relations: ['loja', 'pagamento', 'entrega', 'carrinho', 'cliente'],
     }).catch((err) => {
       throw new BadRequestException(err.message);

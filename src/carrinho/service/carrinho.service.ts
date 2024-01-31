@@ -22,20 +22,9 @@ export class CarrinhoService {
 
 
   public async create(createCarrinhoDto: CreateCarrinhoDto) {
-    const cliente = await this.clientesService.findById(createCarrinhoDto.clienteId.toString());
-    const produto = await this.produtosService.findById(createCarrinhoDto.produtoId);
-    const variacao = await this.variacoesService.findById(createCarrinhoDto.variacaoId);
-    try {
-      const carrinho = await this.carrinhoRepository.save({
-        ...createCarrinhoDto,
-        cliente,
-        produto,
-        variacao
-      });
-      return carrinho;
-    } catch (error) {
-      throw new BadRequestException(error.message);
-    }
+    return await this.carrinhoRepository.save(createCarrinhoDto).catch((err) => {
+      throw new BadRequestException(err.message);
+    });
   }
 
   public async findAll(email: string) {

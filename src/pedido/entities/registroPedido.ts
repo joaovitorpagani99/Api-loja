@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Pedido } from "./pedido.entity";
 
 @Entity()
@@ -7,8 +7,8 @@ export class RegistroPedido {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Pedido, pedido => pedido.registros)
-    pedido: Pedido;
+    //@ManyToOne(() => Pedido, pedido => pedido.registros)
+    //pedido: Pedido;
 
     @Column()
     tipo: string;
@@ -18,4 +18,10 @@ export class RegistroPedido {
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     data: Date;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }

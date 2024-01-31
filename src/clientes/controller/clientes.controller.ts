@@ -38,7 +38,7 @@ export class ClientesController {
   @Get('/admin/:id')
   @Roles(Role.ADMIN)
   public async getCliente(@Param('id') id: string) {
-    return this.clientesService.findById(id);
+    return this.clientesService.findById(+id);
   }
 
   //retornar todos os pedidos de um determinado cliente
@@ -65,7 +65,7 @@ export class ClientesController {
 
   @Get(':id')
   public async findOne(@Param('id') id: string) {
-    return await this.clientesService.findById(id);
+    return await this.clientesService.findById(+id);
   }
 
   @Put(':id')
