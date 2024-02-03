@@ -7,30 +7,12 @@ import { ApiTags } from '@nestjs/swagger';
 @Controller('pagamento')
 @ApiTags('pagamento')
 export class PagamentoController {
-  constructor(private readonly pagamentoService: PagamentoService) {}
+  constructor(private readonly pagamentoService: PagamentoService) { }
 
   @Post()
-  create(@Body() createPagamentoDto: CreatePagamentoDto) {
-    return this.pagamentoService.create(createPagamentoDto);
+  public async create() {
+    return await this.pagamentoService.create();
   }
 
-  @Get()
-  findAll() {
-    return this.pagamentoService.findAll();
-  }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.pagamentoService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePagamentoDto: UpdatePagamentoDto) {
-    return this.pagamentoService.update(+id, updatePagamentoDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.pagamentoService.remove(+id);
-  }
 }

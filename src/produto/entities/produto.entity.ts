@@ -47,8 +47,5 @@ export class Produto {
 
     @OneToMany(() => Avaliacao, avaliacao => avaliacao.produto)
     avaliacoes: Avaliacao[];
-
-    @OneToMany(() => Carrinho, itemCarrinho => itemCarrinho.produto)
-    itensCarrinho: Carrinho[];
 }
  

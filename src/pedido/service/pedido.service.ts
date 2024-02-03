@@ -9,9 +9,14 @@ import { LojaService } from 'src/loja/service/loja.service';
 import { EntregaService } from 'src/entrega/service/entrega.service';
 import { CarrinhoService } from 'src/carrinho/service/carrinho.service';
 import { ClientesService } from 'src/clientes/service/clientes.service';
-
+import * as PagSeguroModule from 'nestjs-pagseguro';
+import axios from 'axios';
+import { Carrinho } from 'src/carrinho/entities/carrinho.entity';
 @Injectable()
 export class PedidoService {
+
+  private readonly apiUrl = 'https://sandbox.api.pagseguro.com/checkouts';
+  private readonly accessToken = 'B882F38BDD9F4809AD044CBC72A98A7B';
 
   constructor(
     @InjectRepository(Pedido)
@@ -21,13 +26,14 @@ export class PedidoService {
     private entregaService: EntregaService,
     private carrinhoService: CarrinhoService,
     private clienteService: ClientesService,
+  ) {
 
-  ) { }
-
+  }
 
   public async create(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
     const loja = await this.lojaService.findById(createPedidoDto.lojaId);
     const carrinho = await this.carrinhoService.findById(createPedidoDto.carrinhoId);
+
     const cliente = await this.clienteService.findById(createPedidoDto.clienteId);
 
     let pedido = new Pedido({
@@ -36,17 +42,20 @@ export class PedidoService {
       cliente,
     });
 
-    return await this.pedidoRepository.save(pedido)
-      .then(async (pedido) => {
-        return this.pedidoRepository.findOne({
-          where: { id: pedido.id.toString() },
-          relations: ['loja', 'pagamento', 'entrega', 'carrinho', 'cliente'],
-        });
-      })
+
+    await this.pedidoRepository.save(pedido)
       .catch((err) => {
         console.log(err);
         throw new BadRequestException(err.message);
       });
+
+
+    const teste = await this.realizarPagamento(pedido.carrinho);
+    if (!teste) {
+      throw new BadRequestException('Erro ao realizar pagamento');
+
+    }
+    return pedido;
   }
 
 
@@ -200,5 +209,42 @@ export class PedidoService {
       throw new NotFoundException('Pedido não encontrado');
     }
     return pedido;
+  }
+
+
+  async realizarPagamento(carrinho: any): Promise<any> {
+    console.log(carrinho)
+    const data = {
+      customer: {
+        name: carrinho[0].cliente.nome,
+        email: carrinho[0].cliente.email,
+        tax_id: carrinho[0].cliente.id,
+      },
+      reference_id: carrinho[0].id,
+      items: [
+        {
+          reference_id: '123',
+          name: carrinho[0].cliente.nome,
+          quantity: carrinho[0].quantidade,
+          unit_amount: carrinho[0].precoUnitario,
+          description: carrinho[0].produto,
+        },
+      ],
+    };
+
+
+    try {
+      const response = await axios.post(this.apiUrl, data, {
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+          'Content-type': 'application/json',
+          accept: 'application/json',
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      throw new Error(`Erro ao realizar o pagamento: ${error.message}`);
+    }
   }
 }

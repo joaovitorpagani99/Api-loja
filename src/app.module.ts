@@ -28,9 +28,18 @@ import { Imagem } from './variacoes/entities/imagem.entity';
 import { CarrinhoModule } from './carrinho/carrinho.module';
 import { Carrinho } from './carrinho/entities/carrinho.entity';
 import { CorreiosModule } from './correios/correios.module';
-
+import { PagSeguroModule } from 'nestjs-pagseguro';
 @Module({
   imports: [
+    PagSeguroModule.register({
+      axiosOptions: {
+        baseURL: process.env.API_PAGSEGURO_BASE_URL,
+      },
+      application: {
+        appID: process.env.PAGSEGURO_APPID,
+        AppKey: process.env.PAGSEGURO_APPKEY,
+      },
+    }),
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mysql',

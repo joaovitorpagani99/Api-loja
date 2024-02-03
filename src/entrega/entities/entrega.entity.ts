@@ -30,6 +30,9 @@ export class Entrega {
     @Column()
     prazo: number;
 
+    @Column()
+    endereco: string;
+
     @OneToOne(()=> Pedido, pedido => pedido.entrega)
     pedido: Pedido;
 

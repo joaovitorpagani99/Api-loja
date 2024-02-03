@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query } from '@nestjs/common';
 import { ClientesService } from '../service/clientes.service';
 import { CreateClienteDto } from '../dto/create-cliente.dto';
 import { UpdateClienteDto } from '../dto/update-cliente.dto';
@@ -58,8 +58,8 @@ export class ClientesController {
   //CLIENTE
   @Post()
   @IsPublic()
-  public async create(@Body() createClienteDto: CreateClienteDto) {
-    return await this.clientesService.create(createClienteDto);
+  public async create(@Body() createClienteDto: CreateClienteDto, @Query('idLoja') idLoja: string) {
+    return await this.clientesService.create(createClienteDto, idLoja);
   }
 
 

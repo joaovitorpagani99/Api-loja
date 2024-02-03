@@ -35,7 +35,7 @@ export class CreateClienteDto {
     permissao?: Role;
     
     @ApiProperty()
-    deletado?: boolean = false;
+    ativo?: boolean = false;
 
     @ApiProperty()
     lojas: Loja[];

@@ -57,7 +57,7 @@ export class PedidoController {
   }
 
   @Get('carrinho/findallPedidio')
-  public async findAllCliente(@Request() req, @Query('idLoja') idLoja: string) { //lisyar todos os pedidos do proprio cliente
+  public async findAllCliente(@Request() req, @Query('idLoja') idLoja: string) {
     return await this.pedidoService.todosOsPedidosCliente(req.user.email, idLoja);
   }
 

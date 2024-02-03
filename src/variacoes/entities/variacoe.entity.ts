@@ -1,5 +1,5 @@
 import { Produto } from "src/produto/entities/produto.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Imagem } from "./imagem.entity";
 import { Carrinho } from "src/carrinho/entities/carrinho.entity";
 
@@ -38,8 +38,8 @@ export class Variacoes {
     @OneToMany(() => Imagem, imagem => imagem.variacoes)
     imagens: Imagem[];
 
-    @OneToMany(() => Carrinho, itemCarrinho => itemCarrinho.variacao)
-    itensCarrinho: Carrinho[];
+    @ManyToMany(() => Carrinho, carrinho => carrinho.variacao)
+    carrinho: Carrinho[];
 
     @CreateDateColumn()
     createdAt: Date;

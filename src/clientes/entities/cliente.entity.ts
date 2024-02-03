@@ -27,7 +27,7 @@ export class Cliente {
     telefone: string;
 
     @Column()
-    deletado: boolean;
+    ativo: boolean;
 
     @Column()
     permissao: Role;

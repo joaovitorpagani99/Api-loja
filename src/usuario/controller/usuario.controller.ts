@@ -16,7 +16,6 @@ export class UsuarioController {
   @IsPublic()
   @Post()
   public create(@Body() createUsuarioDto: CreateUsuarioDto) {
-    createUsuarioDto.permissao = Role.ADMIN;
     return this.usuarioService.create(createUsuarioDto);
   }
 
