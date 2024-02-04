@@ -1,9 +1,8 @@
-import { Avaliacao } from "src/avaliacao/entities/avaliacao.entity";
 import { Carrinho } from "src/carrinho/entities/carrinho.entity";
 import { Loja } from "src/loja/entities/loja.entity";
 import { Pedido } from "src/pedido/entities/pedido.entity";
 import { Role } from "src/usuario/Enum/role-enum";
-import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Cliente {
@@ -36,6 +35,7 @@ export class Cliente {
     endereco: string;
 
     @ManyToMany(() => Loja, loja => loja.clientes)
+    @JoinTable()
     lojas: Loja[];
 
     @OneToMany(()=> Pedido, pedidos => pedidos.cliente)

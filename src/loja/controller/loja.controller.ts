@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, HttpStatus, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, HttpStatus, HttpCode, Query, Req } from '@nestjs/common';
 import { LojaService } from '../service/loja.service';
 import { CreateLojaDto } from '../dto/create-loja.dto';
 import { UpdateLojaDto } from '../dto/update-loja.dto';
@@ -11,6 +11,14 @@ import { ApiTags } from '@nestjs/swagger';
 export class LojaController {
   constructor(private readonly lojaService: LojaService) { }
 
+  
+
+  @Get('/usuario')
+  @Roles(Role.ADMIN)
+  public async getLojasDoUsuario(@Req() req){
+    return await this.lojaService.getLojasDoUsuario(req.user.email);
+  }
+
   @Post()
   @Roles(Role.ADMIN)
   public async create(@Body() createLojaDto: CreateLojaDto) {
@@ -19,8 +27,8 @@ export class LojaController {
 
   @Get()
   @Roles(Role.ADMIN)
-  public async findAll() {
-    return await this.lojaService.findAll();
+  public async findAll(@Req() req){
+    return await this.lojaService.findAll(req.user.email);
   }
 
   @Get(':id')
@@ -38,13 +46,8 @@ export class LojaController {
   @Delete(':id')
   @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async remove(@Param('id') id: string) {
-    await this.lojaService.remove(+id);
+  public async remove(@Param('id') id: string, @Req() req) {
+    await this.lojaService.remove(+id, req.user.email);
   }
 
-
-  @Get(':id/lojas')
-  public async getLojasDoUsuario(@Param('id') id: string) {
-    return await this.lojaService.getLojasDoUsuario(+id);
-  }
 }

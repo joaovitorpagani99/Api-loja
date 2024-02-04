@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -11,6 +12,7 @@ import { Cliente } from '../entities/cliente.entity';
 import { UsuarioService } from 'src/usuario/service/usuario.service';
 import { Role } from 'src/usuario/Enum/role-enum';
 import { LojaService } from 'src/loja/service/loja.service';
+import { Loja } from 'src/loja/entities/loja.entity';
 
 @Injectable()
 export class ClientesService {
@@ -58,56 +60,73 @@ export class ClientesService {
     });
   }
 
-  async create(createClienteDto: CreateClienteDto, idLoja: string) {
-    const loja = await this.lojaService.findById(+idLoja);
-    const buscarEmail = await this.findByEmail(createClienteDto.email);
-    if (buscarEmail.lojas[0].id === loja.id && buscarEmail.ativo === true) {
-      throw new BadRequestException('Email já cadastrado nesta loja.');
-    }
-    createClienteDto.ativo = false;
-    createClienteDto.permissao = Role.USER;
+  async create(createClienteDto: CreateClienteDto) {
+    const loja = await this.lojaService.findById(createClienteDto.idLoja);
 
-    return await this.clienteRepository
+    const buscarEmail = await this.findByEmail(createClienteDto.email);
+
+    /* if(buscarEmail && buscarEmail.lojas[0].id === loja.id && buscarEmail.ativo === true){
+      throw new ConflictException('Usuario já cadastrado nesta loja, com este email.');
+    }*/
+
+    createClienteDto.ativo = true;
+    createClienteDto.permissao = Role.USER;
+    const cliente = await this.clienteRepository
       .save({
         ...createClienteDto,
         loja: loja,
       })
-      .then(async (cliente) => {
-        await this.usuarioService.create({
-          nome: createClienteDto.nome,
-          email: createClienteDto.email,
-          senha: createClienteDto.senha,
-          idade: createClienteDto.idade,
-          permissao: Role.USER,
-        });
-        return {
-          id: cliente.id,
-          nome: cliente.nome,
-          email: cliente.email,
-          idade: cliente.idade,
-          ativo: cliente.ativo,
-        };
-      })
       .catch((err) => {
+        if (err.code === 'ER_DUP_ENTRY') {
+          throw new ConflictException(
+            'CPF ou EMAIL já cadastrado.',
+            err.message,
+          );
+        }
         throw new BadRequestException(err.message);
       });
+
+    try {
+      loja.clientes.push(cliente);
+      await this.lojaService.saveCliente(loja);
+      await this.usuarioService.criarUsuarioCliente(cliente);
+    } catch (error) {
+      console.log(error);
+      if(error instanceof ConflictException){
+        throw new ConflictException(error.message);
+      }
+      throw new BadRequestException(error.message);
+    }
+    const clienteAT = {
+      id: cliente.id,
+      nome: cliente.nome,
+      email: cliente.email,
+      idade: cliente.idade,
+      ativo: cliente.ativo,
+      loja: cliente.loja.nome,
+    };
+    return clienteAT;
+
   }
 
-  async findAll() {
-    return await this.clienteRepository
-      .find()
-      .then(async (clientes) => {
-        return await clientes;
+  async findAll(): Promise<Cliente[]> {
+    const clientes = await this.clienteRepository
+      .find({
+        relations: ['lojas'],
       })
       .catch((error) => {
-        throw new NotFoundException('Nenhuma cliente encontrado');
+        throw new BadRequestException('Erro em listar clientes.');
       });
+    if (clientes.length === 0)
+      throw new NotFoundException('Nenhum cliente encontrado');
+    return clientes;
   }
 
   async findById(id: number): Promise<Cliente> {
     try {
       const cliente = await this.clienteRepository.findOne({
         where: { id },
+        relations: ['lojas'],
       });
       if (!cliente) throw new NotFoundException('Entrega não encontrada');
 
@@ -135,7 +154,7 @@ export class ClientesService {
           throw new BadRequestException('Cliente já deletado');
         }
         const usuario = await this.usuarioService.findByEmail(cliente.email);
-        cliente.ativo = true;
+        cliente.ativo = false;
         await this.clienteRepository.update(id, cliente);
         await this.usuarioService.remove(usuario.id);
       })
@@ -144,13 +163,11 @@ export class ClientesService {
       });
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string): Promise<Cliente> {
     const client = await this.clienteRepository.findOne({
       where: { email: email },
+      relations: ['lojas'],
     });
-    if (!client) {
-      throw new NotFoundException('Cliente não encontrado');
-    }
     return client;
   }
 }

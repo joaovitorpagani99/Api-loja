@@ -1,5 +1,5 @@
 import { Loja } from 'src/loja/entities/loja.entity';
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Role } from "../Enum/role-enum";
 @Entity()
 export class Usuario {
@@ -10,7 +10,7 @@ export class Usuario {
     @Column()
     nome: string;
 
-    @Column({ unique: false })
+    @Column()
     email: string;
 
     @Column()
@@ -19,20 +19,23 @@ export class Usuario {
     @Column()
     permissao: Role;
 
-    @Column({ nullable: true })
+    @Column()
+    cliente: boolean;
+
+    @Column()
     recoveryToken: string;
 
-    @Column({ nullable: true })
+    @Column()
     recoveryDate: Date;
 
-    @Column({ nullable: true, type: 'varchar', length: 64 })
+    @Column()
     confirmationToken: string;
 
-    @ManyToOne(() => Loja, loja => loja.administrador)
-    loja: Loja[];
+    @OneToMany(() => Loja, loja => loja.administrador)
+    lojas: Loja[];
 
 
-    @CreateDateColumn({ nullable: true })
+    @CreateDateColumn()
     createdAt: Date;
 
     @UpdateDateColumn()
