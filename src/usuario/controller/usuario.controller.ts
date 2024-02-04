@@ -16,13 +16,12 @@ export class UsuarioController {
   @IsPublic()
   @Post()
   public create(@Body() createUsuarioDto: CreateUsuarioDto) {
-    createUsuarioDto.permissao = Role.ADMIN;
     return this.usuarioService.create(createUsuarioDto);
   }
 
   @Get()
-  public findAll() {
-    return this.usuarioService.findAll();
+  public async findAll() {
+    return await this.usuarioService.findAll();
   }
 
   @Get(':id')

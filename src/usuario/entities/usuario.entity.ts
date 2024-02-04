@@ -1,6 +1,5 @@
 import { Loja } from 'src/loja/entities/loja.entity';
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import * as crypto from "crypto";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Role } from "../Enum/role-enum";
 @Entity()
 export class Usuario {
@@ -10,44 +9,48 @@ export class Usuario {
 
     @Column()
     nome: string;
-    
-    @Column({ unique: true})
+
+    @Column()
     email: string;
 
     @Column()
     senha: string;
-    
-    @ManyToOne(() => Loja, loja => loja.administrador)
-    loja: Loja[];
-    
+
     @Column()
     permissao: Role;
-    
-    @Column({ nullable: true })
+
+    @Column()
+    cliente: boolean;
+
+    @Column()
     recoveryToken: string;
-  
-    @Column({ nullable: true })
+
+    @Column()
     recoveryDate: Date;
 
-    @Column({ nullable: true, type: 'varchar', length: 64 })
+    @Column()
     confirmationToken: string;
-  
+
+    @OneToMany(() => Loja, loja => loja.administrador)
+    lojas: Loja[];
+
+
     @CreateDateColumn()
     createdAt: Date;
-  
+
     @UpdateDateColumn()
     updatedAt: Date;
 
-    criarTokenRecuperacaoSenha = function(){
+    /*criarTokenRecuperacaoSenha = function () {
         this.recoveryToken = crypto.randomBytes(16).toString("hex");
-        this.recoveryDate = new Date( new Date().getTime() + 24*60*60*1000 );
+        this.recoveryDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
         return { token: this.recoveryToken, date: this.recoveryDate };
     };
-    
-    finalizarTokenRecuperacaoSenha = function(){
+
+    finalizarTokenRecuperacaoSenha = function () {
         this.recoveryToken = null;
         this.recoveryDate = null;
         return { token: this.recoveryToken, date: this.recoveryDate };
-    };
-    
+    };*/
+
 }

@@ -1,16 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsEnum, IsNumber, IsString, MaxLength, MinLength } from "class-validator";
-import { Loja } from "src/loja/entities/loja.entity";
+import { IsBoolean, IsEmail, IsEnum, IsNumber, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 import { Role } from "src/usuario/Enum/role-enum";
 
 export class CreateClienteDto {
     @ApiProperty()
     @IsString()
-    nome?: string;
+    nome: string;
     
     @ApiProperty()
     @IsEmail()
-    email?: string;
+    email: string;
     
     @ApiProperty()
     @IsString()
@@ -20,23 +19,31 @@ export class CreateClienteDto {
     //  message: 'Senha muito fraca',
     //})
     @IsString()
-    senha?: string;
+    senha: string;
+
+    @ApiProperty()
+    @IsString()
+    cpf: string;
     
     @ApiProperty()
     @IsNumber()
-    idade?: Number;
+    idade: Number;
     
     @ApiProperty()
     @IsString()
-    endereco?: string;
+    endereco: string;
     
     @ApiProperty()
     @IsEnum(Role)
-    permissao?: Role;
+    @IsOptional()
+    permissao: Role;
     
     @ApiProperty()
-    deletado?: boolean = false;
+    @IsOptional()
+    @IsBoolean()
+    ativo: boolean = false;
 
     @ApiProperty()
-    lojas: Loja[];
+    @IsNumber()
+    idLoja: number;
 }

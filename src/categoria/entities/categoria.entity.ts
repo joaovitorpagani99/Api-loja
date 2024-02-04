@@ -17,7 +17,7 @@ export class Categoria {
     @Column()
     disponibilidade: boolean;
 
-    @OneToMany(() => Produto, produto => produto.categoria)
+    @OneToMany(() => Produto, produto => produto.categoria, { cascade: true })
     produtos: Produto[];
 
     @ManyToOne(() => Loja, loja => loja.categorias,{ onDelete: 'CASCADE' })

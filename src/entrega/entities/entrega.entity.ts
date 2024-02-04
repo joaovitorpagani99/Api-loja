@@ -1,14 +1,19 @@
 import { Loja } from "src/loja/entities/loja.entity";
 import { Pedido } from "src/pedido/entities/pedido.entity";
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { StatusEntrega } from "../enum/status-entrega.enum";
 
 @Entity()
 export class Entrega {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
-    status: string;
+    @Column({
+        type: 'enum',
+        enum: StatusEntrega,
+        default: StatusEntrega.AGUARDANDO_ENVIO
+    })
+    status: StatusEntrega;
 
     @Column()
     codigoRastreio: string;
@@ -25,9 +30,18 @@ export class Entrega {
     @Column()
     prazo: number;
 
+    @Column()
+    endereco: string;
+
     @OneToOne(()=> Pedido, pedido => pedido.entrega)
     pedido: Pedido;
 
     @OneToOne(()=> Loja, loja => loja.entrega)
     loja: Loja;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }

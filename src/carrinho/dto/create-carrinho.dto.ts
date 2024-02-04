@@ -20,10 +20,5 @@ export class CreateCarrinhoDto {
     @IsNumber()
     @IsPositive()
     @IsNotEmpty()
-    produtoId: number;
-    
-    @IsNumber()
-    @IsPositive()
-    @IsNotEmpty()
     variacaoId: number;
 }

@@ -19,22 +19,21 @@ export class EntregaController {
   @Get()
   @Roles(Role.ADMIN)
   public async findAll(@Query('idLoja')idLoja: string ) {
-    return await this.entregaService.findAll();
+    return await this.entregaService.findAll(idLoja);
   }
 
   @Get(':id')
+  @Roles(Role.ADMIN, Role.USER)
   public async findById(@Param('id') id: string) {
-    return await this.entregaService.findOne(+id);
+    return await this.entregaService.findByID(+id);
   }
 
 
   @Put(':id')
+  @Roles(Role.ADMIN, Role.USER)
   public async update(@Param('id') id: string, @Body() updateEntregaDto: UpdateEntregaDto) {
     return await this.entregaService.update(+id, updateEntregaDto);
   }
 
-  @Delete(':id')
-  public async remove(@Param('id') id: string) {
-    return await this.entregaService.remove(+id);
-  }
+
 }
