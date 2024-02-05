@@ -15,7 +15,7 @@ export class PagamentoController {
     return await this.pagamentoService.create(createPagamentoDto);
   }
 
-  @Get('verificaPagamento')
+  @Post('verificaPagamento')
   @IsPublic()
   public async findAll(@Req() req) {
     console.log(req);
