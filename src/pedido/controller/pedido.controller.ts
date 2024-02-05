@@ -24,8 +24,8 @@ export class PedidoController {
   //pedido especifico de uma loja
   @Get('admin/:id')
   @Roles(Role.ADMIN)
-  public async findById(@Param('idPedido') idPedido: string, @Query('idLoja') idLoja: string) {
-    return await this.pedidoService.findById(idPedido, idLoja);
+  public async findById(@Param('idPedido') idPedido: string) {
+    return await this.pedidoService.findById(idPedido);
   }
 
   @Delete('admin/:idPedido')
