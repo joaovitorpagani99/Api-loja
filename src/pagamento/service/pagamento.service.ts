@@ -1,10 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { CreatePagamentoDto } from '../dto/create-pagamento.dto';
 import * as mercadopago from 'mercadopago';
 import { Carrinho } from 'src/carrinho/entities/carrinho.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Pedido } from 'src/pedido/entities/pedido.entity';
 import { Pagamento } from '../entities/pagamento.entity';
 import { PedidoService } from 'src/pedido/service/pedido.service';
 import { LojaService } from 'src/loja/service/loja.service';
@@ -16,8 +15,8 @@ export class PagamentoService {
   constructor(
     @InjectRepository(Pagamento)
     private pagamentoRepository: Repository<Pagamento>,
-    private readonly pedidoService: PedidoService,
-    private readonly lojaService: LojaService
+    private readonly pedidoService: PedidoService, 
+    private readonly lojaService: LojaService, 
   ) {
     this.mercadoPago = new mercadopago.MercadoPagoConfig({
       accessToken: process.env.MP_ACCESS_TOKEN,
@@ -27,7 +26,6 @@ export class PagamentoService {
   async create(createPagamentoDto: CreatePagamentoDto) {
     const carrinho = createPagamentoDto;
     //return await this.realizarPagamento(carrinho);
-  
   }
 
   async realizarPagamento(carrinho: Carrinho) {

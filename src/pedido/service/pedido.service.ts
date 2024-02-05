@@ -103,7 +103,6 @@ export class PedidoService {
   }
 
   public async remove(id: string, mensagemCancelamento: string) {
-    
     const pedido = await this.pedidoRepository
       .findOne({
         where: { id: id },
