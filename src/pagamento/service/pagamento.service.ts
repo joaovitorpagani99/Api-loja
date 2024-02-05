@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { CreatePagamentoDto } from '../dto/create-pagamento.dto';
 import * as mercadopago from 'mercadopago';
 import { Repository } from 'typeorm';
@@ -16,6 +16,7 @@ export class PagamentoService {
   constructor(
     @InjectRepository(Pagamento)
     private pagamentoRepository: Repository<Pagamento>,
+    @Inject(forwardRef(() => PedidoService))
     private readonly pedidoService: PedidoService,
     private readonly lojaService: LojaService,
   ) {
@@ -27,7 +28,8 @@ export class PagamentoService {
   async create(createPagamentoDto: CreatePagamentoDto) {
     const pedido = await this.pedidoService.findById(createPagamentoDto.idPedido.toString(),);
     const loja = await this.lojaService.findById(createPagamentoDto.idLoja);
-    return await this.realizarPagamento(pedido, loja);
+    const pagamento = await this.realizarPagamento(pedido, loja);
+    return await this.pagamentoRepository.save(pagamento);
   }
 
   async realizarPagamento(pedido: Pedido, loja: Loja) {
@@ -35,6 +37,7 @@ export class PagamentoService {
       const preference = new mercadopago.Preference(this.mercadoPago);
       const response = await preference.create({
         body: {
+          notification_url: process.env.MP_notification_url,
           items: [
             {
               id: pedido.carrinho.id.toString(),

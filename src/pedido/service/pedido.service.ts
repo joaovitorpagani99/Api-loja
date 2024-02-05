@@ -27,6 +27,7 @@ export class PedidoService {
     private lojaService: LojaService,
     private carrinhoService: CarrinhoService,
     private clienteService: ClientesService,
+    private pagamentoService: PagamentoService,
   ) {}
 
   public async create(createPedidoDto: CreatePedidoDto): Promise<Pedido> {

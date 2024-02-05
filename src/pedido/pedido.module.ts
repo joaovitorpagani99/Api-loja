@@ -8,6 +8,7 @@ import { LojaModule } from 'src/loja/loja.module';
 import { ClientesModule } from 'src/clientes/clientes.module';
 import { EntregaModule } from 'src/entrega/entrega.module';
 import { CarrinhoModule } from 'src/carrinho/carrinho.module';
+import { PagamentoModule } from 'src/pagamento/pagamento.module';
 
 @Module({
   imports: [
@@ -15,11 +16,10 @@ import { CarrinhoModule } from 'src/carrinho/carrinho.module';
     LojaModule,
     CarrinhoModule,
     ClientesModule,
-    EntregaModule,
-  
+    forwardRef(() => PagamentoModule),
   ],
   controllers: [PedidoController],
   providers: [PedidoService],
-  exports: [PedidoService, TypeOrmModule.forFeature([Pedido])],
+  exports: [PedidoService],
 })
 export class PedidoModule {}
