@@ -29,18 +29,7 @@ export class ProdutoService {
     return returnCorreio;
   }
 
-  async uploadFile(file: Express.MulterS3.File, idProduto: number) {
-    try {
-      console.log(file)
-      const produto = await this.findById(idProduto);
-      produto.foto = file.location;
-      await this.produtoRepository.save(produto);
-      console.log(produto.foto)
-      return produto.foto;
-    } catch (error) {
-      throw new BadRequestException("Erro ao salvar imagem.");
-    }
-  }
+
 
   async create(createProdutoDto: CreateProdutoDto) {
     const loja = await this.lojaService.findById(createProdutoDto.idLoja);
@@ -83,7 +72,7 @@ export class ProdutoService {
         where: { id },
         relations: ['categoria', 'loja', 'variacoes', 'avaliacoes'],
       });
-      if (!produto) throw new NotFoundException("Produto não encontrado.");
+      if (produto === null) throw new NotFoundException("Produto não encontrado.");
       return produto;
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -165,6 +154,18 @@ export class ProdutoService {
 
     if (result.affected === 0) {
       throw new NotFoundException(`Produto com id ${id} não encontrado`);
+    }
+  }
+
+  async uploadFile(file: Express.MulterS3.File, idProduto: number) {
+    const produto = await this.findById(idProduto);
+    console.log(file);
+    try {
+      produto.foto = file.location;
+      await this.produtoRepository.save(produto);
+      return produto.foto;
+    } catch (error) {
+      throw new BadRequestException("Erro ao salvar imagem.");
     }
   }
 }

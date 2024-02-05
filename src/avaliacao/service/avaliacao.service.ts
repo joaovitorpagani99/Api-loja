@@ -46,7 +46,7 @@ export class AvaliacaoService {
       const avaliacoes = await this.avaliacaoRepository.find(
         {
           where: { loja: { id: +idLoja } },
-          relations: ['produto', 'loja']
+          relations: ['produto']
         }
       );
       return avaliacoes;
@@ -60,7 +60,7 @@ export class AvaliacaoService {
       where: {
         id: +idAvaliacao
       },
-      relations: ['produto','loja']
+      relations: ['produto']
     });
     if (!avaliacao) {
       throw new NotFoundException("Avaliação não encontrada");

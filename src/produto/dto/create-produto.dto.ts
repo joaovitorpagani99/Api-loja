@@ -2,7 +2,6 @@ import { IsBoolean, IsNumber, IsString, IsOptional, IsPositive } from 'class-val
 
 export class CreateProdutoDto {
 
-
     @IsString()
     titulo: string;
 
@@ -13,6 +12,7 @@ export class CreateProdutoDto {
     descricao: string;
 
     @IsString()
+    @IsOptional()
     fotos: string;
 
     @IsNumber()
@@ -31,6 +31,6 @@ export class CreateProdutoDto {
     categoriaId: number;
 
     @IsNumber()
-    idLoja?: number;
+    idLoja: number;
 
 }

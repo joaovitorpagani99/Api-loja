@@ -44,11 +44,14 @@ export class LojaService {
       throw new BadRequestException('Usuário não encontrado');
     }
 
+    const id = usuario.id;
+
+    console.log('id', id);
+
     const lojas = await this.lojaRepository.find({
-      where: { administrador: {id: usuario.id}},
+      where: { administrador: {id: id}},
       relations: ['administrador', 'categorias', 'produtos', 'clientes'],
     });
-
     if (lojas.length === 0) {
       throw new NotFoundException('Nenhuma loja encontrada');
     }
@@ -65,7 +68,7 @@ export class LojaService {
   async findById(idLoja: number): Promise<Loja> {
     const loja = await this.lojaRepository.findOne({
       where: { id: idLoja },
-      relations: ['clientes'],
+      relations: ['clientes', 'administrador', 'categorias', 'produtos'],
     });
 
     if (!loja) {

@@ -1,4 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, HttpStatus, HttpCode, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Put,
+  HttpStatus,
+  HttpCode,
+  Query,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
 import { ProdutoService } from '../service/produto.service';
 import { CreateProdutoDto } from '../dto/create-produto.dto';
 import { UpdateProdutoDto } from '../dto/update-produto.dto';
@@ -11,21 +25,26 @@ import multerConfig from 'src/config/multer-config';
 @Controller('produto')
 @ApiTags('produto')
 export class ProdutoController {
-  constructor(private readonly produtoService: ProdutoService) { }
+  constructor(private readonly produtoService: ProdutoService) {}
 
   @Get(':idProduto/correio')
-  public async findPrecoCorreio(@Param('idProduto') idProduto: string, @Query('cep') cep: string){
+  public async findPrecoCorreio(
+    @Param('idProduto') idProduto: string,
+    @Query('cep') cep: string,
+  ) {
     return await this.produtoService.findPrecoCorreio(+idProduto, cep);
   }
 
-  @Post()
+  @Post('/uploadImagem')
   @Roles(Role.ADMIN)
   @UseInterceptors(FileInterceptor('arquivo', multerConfig))
-  async uploadArquivo(@Query('idProduto')idProduto: string, @UploadedFile() file: Express.MulterS3.File) {
-    console.log('idProduto:', file);
+  async uploadArquivo(
+    @Query('idProduto') idProduto: string,
+    @UploadedFile() file: Express.MulterS3.File,
+  ) {
+    console.log(file);
     return await this.produtoService.uploadFile(file, +idProduto);
   }
-
 
   @Get(':id/avaliacoes')
   public async showAvaliacoes(@Param('id') id: string) {
@@ -47,35 +66,31 @@ export class ProdutoController {
     return await this.produtoService.findByDisponiveis(+idLoja);
   }
 
-
   @Get('search')
   public async findByCategoria(@Query('search') search: string) {
     return await this.produtoService.findByPesquisa(search);
   }
-
 
   @Get(':id')
   public async findById(@Param('id') id: string) {
     return await this.produtoService.findById(+id);
   }
 
-
   @Post()
   @Roles(Role.ADMIN)
   public async create(@Body() createProdutoDto: CreateProdutoDto) {
-    return this.produtoService.create(createProdutoDto);
+    return await this.produtoService.create(createProdutoDto);
   }
-
 
   @Put(':id')
   @Roles(Role.ADMIN)
   public async update(
     @Param('id') id: string,
-    @Body() updateProdutoDto: UpdateProdutoDto) {
+    @Body() updateProdutoDto: UpdateProdutoDto,
+  ) {
     return await this.produtoService.update(+id, updateProdutoDto);
   }
 
- 
   @Delete(':id')
   @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)

@@ -14,7 +14,7 @@ export class VariacoesController {
   constructor(private readonly variacoesService: VariacoesService) { }
 
   @Roles(Role.ADMIN)
-  @Post('imagens')
+  @Post('imagens/upload')
   @UseInterceptors(FileFieldsInterceptor([{ name: 'arquivos' }], multerConfig))
   public async uploadDeVariasImagens(@Query('idVariacoes') idVariacoes: string, @UploadedFiles() files: { arquivos: Express.MulterS3.File[] }) {
     return await this.variacoesService.uploadImagens(+idVariacoes, files['arquivos']);
