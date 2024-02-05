@@ -74,12 +74,10 @@ export class PedidoService {
     return pedidos;
   }
 
-  public async findById(id: string, idLoja: string): Promise<Pedido> {
-    const loja = await this.lojaService.findById(+idLoja);
-
+  public async findById(id: string): Promise<Pedido> {
     const pedido = await this.pedidoRepository
       .findOne({
-        where: { id: id, loja: { id: loja.id } },
+        where: { id: id },
         relations: ['loja', 'pagamento', 'entrega', 'carrinho', 'cliente'],
       })
       .catch((err) => {

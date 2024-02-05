@@ -17,10 +17,23 @@ export class Pagamento {
     @Column()
     formaPagamento: string;
 
+    @Column()
+    idCheckout: string;
+
+    @Column()
+    sandbox_init_point: string;
+    
+    @Column()
+    init_point: string
+
     @OneToOne(() => Pedido, pedido => pedido.pagamento)
     pedido: Pedido
 
     @ManyToOne(() => Loja, loja => loja.pagamentos,{ onDelete: 'CASCADE' })
     loja: Loja;
+
+    constructor(partical: Partial<Pagamento>){
+        Object.assign(this, partical)
+    }
     
 }

@@ -18,7 +18,9 @@ export class CategoriaService {
   constructor(
     @InjectRepository(Categoria)
     private categoriaRepository: Repository<Categoria>,
+    
     private lojaService: LojaService,
+    
     @Inject(forwardRef(() => ProdutoService))
     private produtoService: ProdutoService,
   ) {}
