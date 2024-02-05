@@ -10,8 +10,8 @@ export class PagamentoController {
   constructor(private readonly pagamentoService: PagamentoService) { }
 
   @Post()
-  public async create() {
-    return await this.pagamentoService.create();
+  public async create(@Body() createPagamentoDto: CreatePagamentoDto) {
+    return await this.pagamentoService.create(createPagamentoDto);
   }
 
 

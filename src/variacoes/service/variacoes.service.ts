@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateVariacoeDto } from '../dto/create-variacoe.dto';
 import { UpdateVariacoeDto } from '../dto/update-variacoe.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,37 +21,36 @@ export class VariacoesService {
     @InjectRepository(Imagem)
     private readonly imagemRepository: Repository<Imagem>,
 
-    private readonly produtoService: ProdutoService
-  ) { }
+    private readonly produtoService: ProdutoService,
+  ) {}
 
   public async create(createVariacoeDto: CreateVariacoeDto) {
-    const produto = await this.produtoService.findById(createVariacoeDto.idProduto);
+    const produto = await this.produtoService.findById(
+      createVariacoeDto.idProduto,
+    );
     if (!produto) {
       throw new NotFoundException('Produto não encontrado');
     }
     try {
       const variacoes = await this.variacoesRepository.save({
         ...createVariacoeDto,
-        produto
+        produto,
       });
       const { produto: produtoVariacoes, ...variacoesSemProduto } = variacoes;
       return {
         ...variacoesSemProduto,
-        produto: createVariacoeDto.idProduto
+        produto: createVariacoeDto.idProduto,
       };
     } catch (error) {
       throw new BadRequestException(error.message);
     }
-
   }
 
   public async findAll(idProduto: string): Promise<Variacoes[]> {
-    const variacoes = await this.variacoesRepository.find(
-      {
-        where: { produto: { id: +idProduto } },
-        relations: ['produto', 'imagens'],
-      }
-    );
+    const variacoes = await this.variacoesRepository.find({
+      where: { produto: { id: +idProduto } },
+      relations: ['produto', 'imagens'],
+    });
     if (variacoes.length === 0) {
       throw new NotFoundException('Nenhuma variacao encontrada');
     }
@@ -59,14 +63,13 @@ export class VariacoesService {
       const variacao = await this.variacoesRepository.findOne({
         where: { id },
         relations: ['produto', 'imagens'],
-      })
+      });
       if (!variacao) {
         throw new NotFoundException('Variação não encontrada');
       }
       return variacao;
     } catch (error) {
-      if (error instanceof NotFoundException)
-        throw error;
+      if (error instanceof NotFoundException) throw error;
 
       throw new BadRequestException(error.message);
     }
@@ -77,16 +80,18 @@ export class VariacoesService {
     if (!variacao) {
       throw new NotFoundException('Variação não encontrada');
     }
-    const produto = await this.produtoService.findById(updateVariacoeDto.idProduto);
+    const produto = await this.produtoService.findById(
+      updateVariacoeDto.idProduto,
+    );
     if (!produto) {
       throw new NotFoundException('Produto não encontrado');
     }
-    console.log(updateVariacoeDto)
+    console.log(updateVariacoeDto);
     console.log(produto);
     try {
       await this.variacoesRepository.update(id, {
         ...updateVariacoeDto,
-        produto
+        produto,
       });
       return await this.findById(id);
     } catch (error) {
@@ -96,13 +101,15 @@ export class VariacoesService {
 
   public async remove(id: number) {
     const result = await this.variacoesRepository.delete(id);
-    if(result.affected === 0){
+    if (result.affected === 0) {
       throw new NotFoundException('Variação não encontrada');
     }
   }
 
-
-  public async uploadImagens(idVariacoes: number, files: Express.MulterS3.File[]) {
+  public async uploadImagens(
+    idVariacoes: number,
+    files: Express.MulterS3.File[],
+  ) {
     if (!files || !Array.isArray(files)) {
       throw new Error('Files parameter is not defined or not an array.');
     }
@@ -123,5 +130,4 @@ export class VariacoesService {
       throw new BadRequestException(error.message);
     }
   }
-
 }

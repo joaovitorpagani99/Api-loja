@@ -11,28 +11,16 @@ export class Pagamento {
     @Column()
     valor: number;
 
+    @Column({default: false})
+    efetuado: boolean;
+
     @Column()
     formaPagamento: string;
-
-    @Column({default: 1})
-    parcelas: number;
-
-    @Column()
-    status: string;
-
-    @Column()
-    enderecoEntregaIgualCobrancao: boolean;
-
-    @Column()
-    pagSeguroCode: string;
 
     @OneToOne(() => Pedido, pedido => pedido.pagamento)
     pedido: Pedido
 
     @ManyToOne(() => Loja, loja => loja.pagamentos,{ onDelete: 'CASCADE' })
     loja: Loja;
-
-    constructor(){
-        
-    }
+    
 }

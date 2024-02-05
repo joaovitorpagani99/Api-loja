@@ -19,7 +19,6 @@ export class Carrinho {
     @ManyToOne(() => Cliente, cliente => cliente.carrinhos, { onDelete: 'CASCADE' })
     cliente: Cliente;
 
-
     @ManyToMany(() => Variacoes, variacoes => variacoes.carrinho)
     variacao: Variacoes[];
 

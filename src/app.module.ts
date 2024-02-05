@@ -49,7 +49,7 @@ import { PagSeguroModule } from 'nestjs-pagseguro';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       entities: [
-        Usuario, Loja, Cliente, Categoria, Pagamento, Pedido, Avaliacao, Entrega, Produto, Variacoes, RegistroPedido, Imagem, Carrinho
+        Pagamento, Usuario, Loja, Cliente, Categoria, Pedido, Avaliacao, Entrega, Produto, Variacoes, RegistroPedido, Imagem, Carrinho
       ],
       synchronize: true,
       keepConnectionAlive: true,
@@ -61,11 +61,11 @@ import { PagSeguroModule } from 'nestjs-pagseguro';
     }),
     AuthModule,
     UsuarioModule,
+    PedidoModule,
     LojaModule,
     ClientesModule,
     CategoriaModule,
     ProdutoModule,
-    PedidoModule,
     PagamentoModule,
     AvaliacaoModule,
     VariacoesModule,
