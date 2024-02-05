@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Query, Request, HttpCode } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Query, Request, HttpCode, Req } from '@nestjs/common';
 import { PedidoService } from '../service/pedido.service';
 import { CreatePedidoDto } from '../dto/create-pedido.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -52,19 +52,19 @@ export class PedidoController {
 
   //pegar um determinado pedido de um carrinho 
   @Get('carrinho/pedidoespecifico')
-  public async findByCarrinho(@Request() req, @Query('idLoja') idLoja: string, @Query('idPedido') idPedido: string) {
+  public async findByCarrinho(@Req() req, @Query('idLoja') idLoja: string, @Query('idPedido') idPedido: string) {
     return await this.pedidoService.pegarUmPedidoEspecifico(req.user.email, idLoja, idPedido);
   }
 
   @Get('carrinho/findallPedidio')
-  public async findAllCliente(@Request() req, @Query('idLoja') idLoja: string) {
+  public async findAllCliente(@Req() req, @Query('idLoja') idLoja: string) {
     return await this.pedidoService.todosOsPedidosCliente(req.user.email, idLoja);
   }
 
 
   //remover um pedido de um carrinho
   @Delete(':idPedido')
-  public async cancelarPedido(@Request() req, @Query('idPedido') idPedido: string, @Body() mensagemCancelamento: string) {
+  public async cancelarPedido(@Req() req, @Query('idPedido') idPedido: string, @Body() mensagemCancelamento: string) {
     return this.pedidoService.cancelarPedidoCliente(req.user.email, idPedido, mensagemCancelamento);
   }
 

@@ -33,7 +33,6 @@ export class CarrinhoService {
     carrinho.cliente = cliente;
     carrinho.quantidade = createCarrinhoDto.quantidade;
     carrinho.precoUnitario = createCarrinhoDto.precoUnitario;
-    console.log(carrinho);
       return await this.carrinhoRepository.save(carrinho)
       .catch((err) => {
         throw new BadRequestException(err.message);

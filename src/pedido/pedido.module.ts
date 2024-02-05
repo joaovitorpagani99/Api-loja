@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PedidoService } from './service/pedido.service';
 import { PedidoController } from './controller/pedido.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -14,7 +14,7 @@ import { CarrinhoModule } from 'src/carrinho/carrinho.module';
   imports: [
     TypeOrmModule.forFeature([Pedido, RegistroPedido]),
     LojaModule,
-    PagamentoModule,
+    forwardRef(() => PagamentoModule),
     ClientesModule,
     EntregaModule,
     CarrinhoModule,
