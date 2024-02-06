@@ -11,6 +11,11 @@ import { Roles } from 'src/auth/decorator/roles.decorator';
 export class EntregaController {
   constructor(private readonly entregaService: EntregaService) {}
 
+  @Get(':cep')
+  public async findByCep(@Param('cep')cep: string) {
+    return await this.entregaService.findByCep(cep);
+  }
+
   @Post()
   public async create(@Body() createEntregaDto: CreateEntregaDto) {
     return await this.entregaService.create(createEntregaDto);

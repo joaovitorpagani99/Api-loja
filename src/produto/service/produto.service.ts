@@ -1,4 +1,4 @@
-import { TamanhoProdutoDto } from './../../correios/dto/tamanho-produto.dto';
+import { TamanhoProdutoDto } from '../../entrega/dto/dto/tamanho-produto.dto';
 import { CategoriaService } from './../../categoria/service/categoria.service';
 import { LojaService } from './../../loja/service/loja.service';
 import { Loja } from 'src/loja/entities/loja.entity';
@@ -8,8 +8,7 @@ import { UpdateProdutoDto } from '../dto/update-produto.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Produto } from '../entities/produto.entity';
 import { Like, Repository } from 'typeorm';
-import { CorreiosService } from 'src/correios/service/correios.service';
-import { CdServiceEnum } from 'src/correios/enums/correio-service.enum';
+import { EntregaService } from 'src/entrega/service/entrega.service';
 
 @Injectable()
 export class ProdutoService {
@@ -19,13 +18,13 @@ export class ProdutoService {
     private readonly produtoRepository: Repository<Produto>,
     private readonly lojaService: LojaService,
     private readonly CategoriaService: CategoriaService,
-    private readonly correiosService: CorreiosService,
+    private readonly entregaService: EntregaService,
   ) { }
 
   public async findPrecoCorreio(idProduto: number, cep: string) {
     const produto = await this.findById(idProduto);
     const tamanhoProduto = new TamanhoProdutoDto(produto.variacoes[0]);
-    const returnCorreio = await this.correiosService.calcularPrecoPrazo( cep, tamanhoProduto);
+    const returnCorreio = await this.entregaService.calcularPrecoPrazo( cep, tamanhoProduto);
     return returnCorreio;
   }
 

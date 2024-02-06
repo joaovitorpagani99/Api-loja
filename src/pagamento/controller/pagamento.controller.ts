@@ -19,7 +19,11 @@ export class PagamentoController {
   @IsPublic()
   public async findAll(@Req() req) {
     console.log(req);
-    
+  }
+
+  @Get(':id')
+  public async buscarPagamento(@Param('id') id: string){
+    return await this.pagamentoService.buscarPagamento(id);
   }
 
 

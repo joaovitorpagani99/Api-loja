@@ -27,7 +27,6 @@ import { RegistroPedido } from './pedido/entities/registroPedido';
 import { Imagem } from './variacoes/entities/imagem.entity';
 import { CarrinhoModule } from './carrinho/carrinho.module';
 import { Carrinho } from './carrinho/entities/carrinho.entity';
-import { CorreiosModule } from './correios/correios.module';
 import { PagSeguroModule } from 'nestjs-pagseguro';
 @Module({
   imports: [
@@ -71,7 +70,6 @@ import { PagSeguroModule } from 'nestjs-pagseguro';
     VariacoesModule,
     EntregaModule,
     CarrinhoModule,
-    CorreiosModule,
   ],
   controllers: [AppController],
 })

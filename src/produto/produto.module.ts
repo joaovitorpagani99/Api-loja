@@ -5,14 +5,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Produto } from './entities/produto.entity';
 import { LojaModule } from 'src/loja/loja.module';
 import { CategoriaModule } from 'src/categoria/categoria.module';
-import { CorreiosModule } from 'src/correios/correios.module';
+import { EntregaModule } from 'src/entrega/entrega.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Produto]),
     LojaModule,
     forwardRef(() => CategoriaModule),
-    CorreiosModule,
+    EntregaModule,
   ],
   controllers: [ProdutoController],
   providers: [ProdutoService],

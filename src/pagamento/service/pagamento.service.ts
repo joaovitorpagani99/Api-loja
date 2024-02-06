@@ -63,4 +63,8 @@ export class PagamentoService {
       throw new Error(err);
     }
   }
+
+  public async buscarPagamento(id: string) {
+    return null;
+  }
 }
