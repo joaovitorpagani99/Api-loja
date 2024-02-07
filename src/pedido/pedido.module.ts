@@ -17,6 +17,7 @@ import { PagamentoModule } from 'src/pagamento/pagamento.module';
     CarrinhoModule,
     ClientesModule,
     forwardRef(() => PagamentoModule),
+    EntregaModule,
   ],
   controllers: [PedidoController],
   providers: [PedidoService],

@@ -26,8 +26,8 @@ export class CarrinhoController {
   }
 
   @Put(':id')
-  public async update(@Param('id') id: string, @Body() updateCarrinhoDto: UpdateCarrinhoDto, @Req() req: RequestInt){
-    return await this.carrinhoService.update(+id, updateCarrinhoDto, req.user.email);
+  public async update(@Param('id') id: string, @Body() updateCarrinhoDto: UpdateCarrinhoDto){
+    return await this.carrinhoService.update(+id, updateCarrinhoDto);
   }
 
   @Delete(':id')

@@ -1,8 +1,14 @@
-import { TamanhoProdutoDto } from '../../entrega/dto/dto/tamanho-produto.dto';
+import { TamanhoProdutoDto } from '../../entrega/dto/tamanho-produto.dto';
 import { CategoriaService } from './../../categoria/service/categoria.service';
 import { LojaService } from './../../loja/service/loja.service';
 import { Loja } from 'src/loja/entities/loja.entity';
-import { BadRequestException, Inject, Injectable, NotFoundException, forwardRef } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { CreateProdutoDto } from '../dto/create-produto.dto';
 import { UpdateProdutoDto } from '../dto/update-produto.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,39 +18,47 @@ import { EntregaService } from 'src/entrega/service/entrega.service';
 
 @Injectable()
 export class ProdutoService {
-
   constructor(
     @InjectRepository(Produto)
     private readonly produtoRepository: Repository<Produto>,
     private readonly lojaService: LojaService,
     private readonly CategoriaService: CategoriaService,
     private readonly entregaService: EntregaService,
-  ) { }
+  ) {}
 
   public async findPrecoCorreio(idProduto: number, cep: string) {
     const produto = await this.findById(idProduto);
-    const tamanhoProduto = new TamanhoProdutoDto(produto.variacoes[0]);
-    const returnCorreio = await this.entregaService.calcularPrecoPrazo( cep, tamanhoProduto);
+    const tamanhoProduto = new TamanhoProdutoDto(
+      produto.variacoes[0].pesoKg,
+      produto.variacoes[0].comprimento,
+      produto.variacoes[0].alturaCm,
+      produto.variacoes[0].larguraCm,
+    );
+    const returnCorreio = await this.entregaService.calcularPrecoPrazo(
+      cep,
+      tamanhoProduto,
+    );
     return returnCorreio;
   }
 
-
-
   async create(createProdutoDto: CreateProdutoDto) {
     const loja = await this.lojaService.findById(createProdutoDto.idLoja);
-    const categoria = await this.CategoriaService.findById(createProdutoDto.idLoja.toString(), createProdutoDto.categoriaId);
+    const categoria = await this.CategoriaService.findById(
+      createProdutoDto.idLoja.toString(),
+      createProdutoDto.categoriaId,
+    );
 
     try {
       const produto = await this.produtoRepository.save({
         ...createProdutoDto,
         loja,
-        categoria
+        categoria,
       });
 
       const { loja: _, categoria: __, ...produtoSemLojaECategoria } = produto;
       return produtoSemLojaECategoria;
     } catch (error) {
-      throw new BadRequestException("Erro ao salvar produto.");
+      throw new BadRequestException('Erro ao salvar produto.');
     }
   }
 
@@ -71,52 +85,53 @@ export class ProdutoService {
         where: { id },
         relations: ['categoria', 'loja', 'variacoes', 'avaliacoes'],
       });
-      if (produto === null) throw new NotFoundException("Produto não encontrado.");
+      if (produto === null)
+        throw new NotFoundException('Produto não encontrado.');
       return produto;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new BadRequestException("Erro ao buscar produto.");
+      throw new BadRequestException('Erro ao buscar produto.');
     }
-
-
   }
 
   async findByPesquisa(search: string) {
-    return await this.produtoRepository.find({
-      where: { titulo: Like(`%${search}%`) },
-      relations: ['categoria', 'loja', 'variacoes', 'avaliacoes'],
-    }).then((produto) => {
-      return produto;
-    }).catch((err) => {
-      throw new NotFoundException("Produto não encontrado.");
-    });
+    return await this.produtoRepository
+      .find({
+        where: { titulo: Like(`%${search}%`) },
+        relations: ['categoria', 'loja', 'variacoes', 'avaliacoes'],
+      })
+      .then((produto) => {
+        return produto;
+      })
+      .catch((err) => {
+        throw new NotFoundException('Produto não encontrado.');
+      });
   }
 
   public async findVariacoes(idProdutos: number) {
     try {
       const produto = await this.findById(idProdutos);
       if (produto.variacoes.length == 0) {
-        return "Não há variacoes para este produto.";
+        return 'Não há variacoes para este produto.';
       }
-      return await produto.variacoes
+      return await produto.variacoes;
     } catch (error) {
-      throw new BadRequestException("Erro em buscar Variações desse Produto.")
+      throw new BadRequestException('Erro em buscar Variações desse Produto.');
     }
   }
   public async findAvaliacoes(idProdutos: number) {
     try {
       const produto = await this.findById(idProdutos);
       if (produto.avaliacoes.length == 0) {
-        return "Não há avaliações para este produto.";
+        return 'Não há avaliações para este produto.';
       }
       return await produto.avaliacoes;
     } catch (error) {
-      throw new BadRequestException("Erro em buscar avaliações desse Produto.")
+      throw new BadRequestException('Erro em buscar avaliações desse Produto.');
     }
   }
-
 
   async findByDisponiveis(idLoja: number) {
     const loja = await this.lojaService.findById(idLoja);
@@ -129,23 +144,25 @@ export class ProdutoService {
       });
 
       if (produtos.length === 0) {
-        throw new NotFoundException("Não tem produto disponivel.");
+        throw new NotFoundException('Não tem produto disponivel.');
       }
 
       return produtos;
     } catch (error) {
       if (error instanceof NotFoundException) return error;
-      throw new BadRequestException("Erro em buscar disponiveis")
+      throw new BadRequestException('Erro em buscar disponiveis');
     }
-
   }
 
   async update(id: number, updateProdutoDto: UpdateProdutoDto) {
-    return await this.produtoRepository.update(id, updateProdutoDto).then(async () => {
-      return await this.findById(id);
-    }).catch(() => {
-      throw new BadRequestException("Erro ao atualizar produto.");
-    });
+    return await this.produtoRepository
+      .update(id, updateProdutoDto)
+      .then(async () => {
+        return await this.findById(id);
+      })
+      .catch(() => {
+        throw new BadRequestException('Erro ao atualizar produto.');
+      });
   }
 
   async remove(id: number) {
@@ -164,7 +181,7 @@ export class ProdutoService {
       await this.produtoRepository.save(produto);
       return produto.foto;
     } catch (error) {
-      throw new BadRequestException("Erro ao salvar imagem.");
+      throw new BadRequestException('Erro ao salvar imagem.');
     }
   }
 }

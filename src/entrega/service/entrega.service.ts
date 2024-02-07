@@ -6,9 +6,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Entrega } from '../entities/entrega.entity';
 import { Repository } from 'typeorm';
 import { HttpService } from '@nestjs/axios';
-import { ReturnCep } from '../dto/dto/return-cep.dto';
+import { ReturnCep } from '../dto/return-cep.dto';
 import { AxiosError } from 'axios';
-import { TamanhoProdutoDto } from '../dto/dto/tamanho-produto.dto';
+import { TamanhoProdutoDto } from '../dto/tamanho-produto.dto';
+import { EntregaInterface } from '../entities/entrega.interface';
 
 @Injectable()
 export class EntregaService {
@@ -28,8 +29,18 @@ export class EntregaService {
 
   public async create(createEntregaDto: CreateEntregaDto) {
     try {
-      await this.entregaRepository.save(createEntregaDto);
-      return createEntregaDto;
+      const entrega = await this.entregaRepository.save(createEntregaDto);
+      return entrega;
+    } catch (error) {
+      throw new BadRequestException('Erro ao criar entrega.')
+    }
+  }
+
+  public async salvar(entrega: Entrega) {
+    try {
+      const entregaSalvo = await this.entregaRepository.save(entrega);
+      console.log(entregaSalvo);
+      return entregaSalvo;
     } catch (error) {
       throw new BadRequestException('Erro ao criar entrega.')
     }
@@ -92,12 +103,13 @@ export class EntregaService {
     return returnCep;
   }
 
-  async calcularPrecoPrazo(cep, tamanhoProduto: TamanhoProdutoDto): Promise<any> {
+  async calcularPrecoPrazo(cep, tamanhoProduto: TamanhoProdutoDto): Promise<EntregaInterface> {
     const url = `${this.urlBase}/${this.CEP_COMPANY}/${cep}/${tamanhoProduto.peso}/${tamanhoProduto.altura}/${tamanhoProduto.largura}/${tamanhoProduto.comprimento}/${this.CHAVE_CEPCERTO}`;
     return this.httpService.axiosRef
       .get(url)
       .then((result) => {
-        return result.data;
+        const resultData: EntregaInterface = result.data;
+        return resultData;
       })
       .catch((error: AxiosError) => {
         throw new BadRequestException(

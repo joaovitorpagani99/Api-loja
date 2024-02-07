@@ -25,14 +25,9 @@ export class PagamentoService {
     });
   }
 
-  async create(createPagamentoDto: CreatePagamentoDto) {
-    const pedido = await this.pedidoService.findById(createPagamentoDto.idPedido.toString(),);
-    const loja = await this.lojaService.findById(createPagamentoDto.idLoja);
-    const pagamento = await this.realizarPagamento(pedido, loja);
-    return await this.pagamentoRepository.save(pagamento);
-  }
 
-  async realizarPagamento(pedido: Pedido, loja: Loja) {
+  async realizarPagamento(pedido: Pedido, loja: Loja, cep: string, valorFrete: string) {
+    console.log(pedido, loja, cep, valorFrete);
     try {
       const preference = new mercadopago.Preference(this.mercadoPago);
       const response = await preference.create({
@@ -44,7 +39,7 @@ export class PagamentoService {
               category_id: loja.categorias[0].id.toString(),
               title: loja.nome,
               quantity: pedido.carrinho.quantidade,
-              unit_price: pedido.carrinho.precoUnitario,
+              unit_price: (pedido.carrinho.precoUnitario * pedido.carrinho.quantidade) + +valorFrete,
             },
           ],
         },
@@ -58,7 +53,19 @@ export class PagamentoService {
         pedido,
         loja,
       });
-      return pagamento;
+      const pagamentoSalvo = await this.pagamentoRepository.save(pagamento);
+      return {
+        idPagamento: pagamentoSalvo.id,
+        efetuado: pagamentoSalvo.efetuado,
+        valor: pagamentoSalvo.valor,
+        idCheckout: pagamentoSalvo.idCheckout,
+        sandbox_init_point: pagamentoSalvo.sandbox_init_point,
+        init_point: pagamentoSalvo.init_point,
+        produto: pagamentoSalvo.pedido.loja.produtos,
+        variacao: pagamentoSalvo.pedido.carrinho,
+        loja: pagamentoSalvo.loja,
+        carrinho: pagamentoSalvo.pedido.carrinho
+      };
     } catch (err) {
       throw new Error(err);
     }
