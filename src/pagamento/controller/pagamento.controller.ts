@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Query } from '@nestjs/common';
 import { PagamentoService } from '../service/pagamento.service';
 import { CreatePagamentoDto } from '../dto/create-pagamento.dto';
 import { UpdatePagamentoDto } from '../dto/update-pagamento.dto';
@@ -10,16 +10,16 @@ import { IsPublic } from 'src/auth/decorator/is-public.decorator';
 export class PagamentoController {
   constructor(private readonly pagamentoService: PagamentoService) { }
 
-  @Post()
-  public async create(@Body() createPagamentoDto: CreatePagamentoDto) {
-    return await this.pagamentoService.create(createPagamentoDto);
-  }
 
   @Post('verificaPagamento')
   @IsPublic()
   public async findAll(@Req() req) {
     console.log(req);
-    
+  }
+
+  @Get(':id')
+  public async buscarPagamento(@Param('id') id: string){
+    return await this.pagamentoService.buscarPagamento(id);
   }
 
 

@@ -12,8 +12,8 @@ export class PedidoController {
 
 
   @Post()
-  public async create(@Body() createPedidoDto: CreatePedidoDto) {
-    return await this.pedidoService.create(createPedidoDto);
+  public async create(@Body() createPedidoDto: CreatePedidoDto, @Query('cep') cep: string){
+    return await this.pedidoService.create(createPedidoDto, cep);
   }
 
   @Get()

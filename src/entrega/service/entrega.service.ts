@@ -5,20 +5,42 @@ import { UpdateEntregaDto } from '../dto/update-entrega.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Entrega } from '../entities/entrega.entity';
 import { Repository } from 'typeorm';
+import { HttpService } from '@nestjs/axios';
+import { ReturnCep } from '../dto/return-cep.dto';
+import { AxiosError } from 'axios';
+import { TamanhoProdutoDto } from '../dto/tamanho-produto.dto';
+import { EntregaInterface } from '../entities/entrega.interface';
 
 @Injectable()
 export class EntregaService {
+  URL_CORREIOS = process.env.CEP_API_URL;
+  CEP_COMPANY = process.env.CEP_COMPANY;
+  CHAVE_CEPCERTO = process.env.CHAVE_CEPCERTO;
+  urlBase = process.env.URL_BASE_FRETE;
+
   constructor(
     @InjectRepository(Entrega)
     private readonly entregaRepository: Repository<Entrega>,
     private readonly lojaService: LojaService,
+    private httpService: HttpService,
+
   ) { }
 
 
   public async create(createEntregaDto: CreateEntregaDto) {
     try {
-      await this.entregaRepository.save(createEntregaDto);
-      return createEntregaDto;
+      const entrega = await this.entregaRepository.save(createEntregaDto);
+      return entrega;
+    } catch (error) {
+      throw new BadRequestException('Erro ao criar entrega.')
+    }
+  }
+
+  public async salvar(entrega: Entrega) {
+    try {
+      const entregaSalvo = await this.entregaRepository.save(entrega);
+      console.log(entregaSalvo);
+      return entregaSalvo;
     } catch (error) {
       throw new BadRequestException('Erro ao criar entrega.')
     }
@@ -57,5 +79,42 @@ export class EntregaService {
     return await this.entregaRepository.findOne({
       where: { id },
     });
+  }
+
+
+
+  async findByCep(cep: string): Promise<ReturnCep> {
+    if (!cep) {
+      throw new BadRequestException('CEP is required');
+    }
+    const returnCep: ReturnCep = await this.httpService.axiosRef
+      .get<ReturnCep>(this.URL_CORREIOS.replace('{CEP}', cep))
+      .then((result) => {
+        if (result.data.erro === 'true') {
+          throw new NotFoundException('CEP not found');
+        }
+        return result.data;
+      })
+      .catch((error: AxiosError) => {
+        throw new BadRequestException(
+          `Error in connection request ${error.message}`,
+        );
+      });
+    return returnCep;
+  }
+
+  async calcularPrecoPrazo(cep, tamanhoProduto: TamanhoProdutoDto): Promise<EntregaInterface> {
+    const url = `${this.urlBase}/${this.CEP_COMPANY}/${cep}/${tamanhoProduto.peso}/${tamanhoProduto.altura}/${tamanhoProduto.largura}/${tamanhoProduto.comprimento}/${this.CHAVE_CEPCERTO}`;
+    return this.httpService.axiosRef
+      .get(url)
+      .then((result) => {
+        const resultData: EntregaInterface = result.data;
+        return resultData;
+      })
+      .catch((error: AxiosError) => {
+        throw new BadRequestException(
+          `Error in connection request ${error.message}`,
+        );
+      });
   }
 }

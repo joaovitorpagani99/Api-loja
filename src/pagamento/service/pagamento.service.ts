@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { CreatePagamentoDto } from '../dto/create-pagamento.dto';
 import * as mercadopago from 'mercadopago';
 import { Repository } from 'typeorm';
@@ -16,6 +16,7 @@ export class PagamentoService {
   constructor(
     @InjectRepository(Pagamento)
     private pagamentoRepository: Repository<Pagamento>,
+    @Inject(forwardRef(() => PedidoService))
     private readonly pedidoService: PedidoService,
     private readonly lojaService: LojaService,
   ) {
@@ -24,24 +25,21 @@ export class PagamentoService {
     });
   }
 
-  async create(createPagamentoDto: CreatePagamentoDto) {
-    const pedido = await this.pedidoService.findById(createPagamentoDto.idPedido.toString(),);
-    const loja = await this.lojaService.findById(createPagamentoDto.idLoja);
-    return await this.realizarPagamento(pedido, loja);
-  }
 
-  async realizarPagamento(pedido: Pedido, loja: Loja) {
+  async realizarPagamento(pedido: Pedido, loja: Loja, cep: string, valorFrete: string) {
+    console.log(pedido, loja, cep, valorFrete);
     try {
       const preference = new mercadopago.Preference(this.mercadoPago);
       const response = await preference.create({
         body: {
+          notification_url: process.env.MP_notification_url,
           items: [
             {
               id: pedido.carrinho.id.toString(),
               category_id: loja.categorias[0].id.toString(),
               title: loja.nome,
               quantity: pedido.carrinho.quantidade,
-              unit_price: pedido.carrinho.precoUnitario,
+              unit_price: (pedido.carrinho.precoUnitario * pedido.carrinho.quantidade) + +valorFrete,
             },
           ],
         },
@@ -55,9 +53,25 @@ export class PagamentoService {
         pedido,
         loja,
       });
-      return pagamento;
+      const pagamentoSalvo = await this.pagamentoRepository.save(pagamento);
+      return {
+        idPagamento: pagamentoSalvo.id,
+        efetuado: pagamentoSalvo.efetuado,
+        valor: pagamentoSalvo.valor,
+        idCheckout: pagamentoSalvo.idCheckout,
+        sandbox_init_point: pagamentoSalvo.sandbox_init_point,
+        init_point: pagamentoSalvo.init_point,
+        produto: pagamentoSalvo.pedido.loja.produtos,
+        variacao: pagamentoSalvo.pedido.carrinho,
+        loja: pagamentoSalvo.loja,
+        carrinho: pagamentoSalvo.pedido.carrinho
+      };
     } catch (err) {
       throw new Error(err);
     }
+  }
+
+  public async buscarPagamento(id: string) {
+    return null;
   }
 }

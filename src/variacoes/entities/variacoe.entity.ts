@@ -38,8 +38,8 @@ export class Variacoes {
     @OneToMany(() => Imagem, imagem => imagem.variacoes)
     imagens: Imagem[];
 
-    @ManyToMany(() => Carrinho, carrinho => carrinho.variacao)
-    carrinho: Carrinho[];
+    @ManyToOne(() => Carrinho, carrinho => carrinho.variacoes, { onDelete: 'CASCADE' })
+    carrinho: Carrinho;
 
     @CreateDateColumn()
     createdAt: Date;

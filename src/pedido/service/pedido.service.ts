@@ -10,51 +10,70 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Pedido } from '../entities/pedido.entity';
 import { LojaService } from 'src/loja/service/loja.service';
-import { EntregaService } from 'src/entrega/service/entrega.service';
 import { CarrinhoService } from 'src/carrinho/service/carrinho.service';
 import { ClientesService } from 'src/clientes/service/clientes.service';
-import * as PagSeguroModule from 'nestjs-pagseguro';
-import axios from 'axios';
-import { Carrinho } from 'src/carrinho/entities/carrinho.entity';
+import { EntregaService } from 'src/entrega/service/entrega.service';
+import { Variacoes } from 'src/variacoes/entities/variacoe.entity';
+import { TamanhoProdutoDto } from 'src/entrega/dto/tamanho-produto.dto';
+import { Entrega } from 'src/entrega/entities/entrega.entity';
+
 @Injectable()
 export class PedidoService {
-  private readonly apiUrl = 'https://sandbox.api.pagseguro.com/checkouts';
-  private readonly accessToken = 'B882F38BDD9F4809AD044CBC72A98A7B';
-
   constructor(
     @InjectRepository(Pedido)
     private pedidoRepository: Repository<Pedido>,
     private lojaService: LojaService,
     private carrinhoService: CarrinhoService,
     private clienteService: ClientesService,
+    private pagamentoService: PagamentoService,
+    private entregaService: EntregaService,
   ) {}
 
-  public async create(createPedidoDto: CreatePedidoDto): Promise<Pedido> {
+  public async create(createPedidoDto: CreatePedidoDto, cep: string) {
     const loja = await this.lojaService.findById(createPedidoDto.lojaId);
     const carrinho = await this.carrinhoService.findById(
       createPedidoDto.carrinhoId,
     );
-
     const cliente = await this.clienteService.findById(
       createPedidoDto.clienteId,
     );
 
-    let pedido = new Pedido({
-      loja,
-      carrinho,
-      cliente,
-    });
+    let pedido = new Pedido({ loja, carrinho, cliente });
+    const valorEntrega = await this.verificarEntregaCorreio(
+      cep,
+      carrinho.variacoes,
+    );
 
     await this.pedidoRepository.save(pedido).catch((err) => {
-      console.log(err);
       throw new BadRequestException(err.message);
     });
 
-    /* const teste = await this.realizarPagamento(pedido.carrinho);
-    if (!teste) {
-      throw new BadRequestException('Erro ao realizar pagamento');
-    }*/
-    return pedido;
+    const pagamento = await this.pagamentoService.realizarPagamento(
+      pedido,
+      loja,
+      cep,
+      valorEntrega.valorpac,
+    );
+
+    console.log(pagamento);
+
+    const entrega = new Entrega({
+      tipo: 'PAC',
+      custo: pagamento.valor,
+      dataPedido: pedido.createdAt,
+      endereco: cliente.endereco,
+      prazo: +valorEntrega.prazopac,
+      pedido,
+      loja,
+    });
+
+    console.log(entrega);
+
+    await this.entregaService.salvar(entrega).catch((err) => {
+      throw new BadRequestException(err.message);
+    });
+
+    return pagamento;
   }
 
   public async findAll(idLoja: string) {
@@ -241,38 +260,29 @@ export class PedidoService {
     return pedido;
   }
 
-  async realizarPagamento(carrinho: any): Promise<any> {
-    console.log(carrinho);
-    const data = {
-      customer: {
-        name: carrinho[0].cliente.nome,
-        email: carrinho[0].cliente.email,
-        tax_id: carrinho[0].cliente.id,
-      },
-      reference_id: carrinho[0].id,
-      items: [
-        {
-          reference_id: '123',
-          name: carrinho[0].cliente.nome,
-          quantity: carrinho[0].quantidade,
-          unit_amount: carrinho[0].precoUnitario,
-          description: carrinho[0].produto,
-        },
-      ],
-    };
-
-    try {
-      const response = await axios.post(this.apiUrl, data, {
-        headers: {
-          Authorization: `Bearer ${this.accessToken}`,
-          'Content-type': 'application/json',
-          accept: 'application/json',
-        },
-      });
-
-      return response.data;
-    } catch (error) {
-      throw new Error(`Erro ao realizar o pagamento: ${error.message}`);
+  private async verificarEntregaCorreio(cep, variacoes: Variacoes[]) {
+    if (!variacoes || !Array.isArray(variacoes)) {
+      throw new Error('variacoes é undefined ou não é uma array');
     }
+    let pesoTotal = 0;
+    let comprimentoTotal = 0;
+    let alturaTotal = 0;
+    let larguraTotal = 0;
+
+    variacoes.forEach(async (item) => {
+      pesoTotal += item.pesoKg;
+      comprimentoTotal += item.comprimento;
+      alturaTotal += item.alturaCm;
+      larguraTotal += item.larguraCm;
+    });
+    const tamanho = new TamanhoProdutoDto(
+      pesoTotal,
+      comprimentoTotal,
+      larguraTotal,
+      comprimentoTotal,
+    );
+
+    const valor = await this.entregaService.calcularPrecoPrazo(cep, tamanho);
+    return valor;
   }
 }

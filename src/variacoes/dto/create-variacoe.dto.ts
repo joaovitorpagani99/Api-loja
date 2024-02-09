@@ -23,5 +23,22 @@ export class CreateVariacoeDto {
     entrega: string;
     
     @IsNumber()
+    @IsOptional()
+    alturaCm: number;
+
+    @IsNumber()
+    @IsOptional()
+    larguraCm: number;
+
+    @IsNumber()
+    @IsOptional()
+    comprimento: number;
+
+    @IsNumber()
+    @IsOptional()
+    pesoKg: number;
+
+    
+    @IsNumber()
     idProduto: number;
 }

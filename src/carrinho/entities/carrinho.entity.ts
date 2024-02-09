@@ -1,4 +1,4 @@
-import { Entity, Column, ManyToOne, PrimaryGeneratedColumn, OneToOne, ManyToMany } from 'typeorm';
+import { Entity, Column, ManyToOne, PrimaryGeneratedColumn, OneToOne, ManyToMany, OneToMany } from 'typeorm';
 import { Produto } from 'src/produto/entities/produto.entity';
 import { Variacoes } from 'src/variacoes/entities/variacoe.entity';
 import { Pedido } from 'src/pedido/entities/pedido.entity';
@@ -6,7 +6,6 @@ import { Cliente } from 'src/clientes/entities/cliente.entity';
 
 @Entity()
 export class Carrinho {
-
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -19,8 +18,8 @@ export class Carrinho {
     @ManyToOne(() => Cliente, cliente => cliente.carrinhos, { onDelete: 'CASCADE' })
     cliente: Cliente;
 
-    @ManyToMany(() => Variacoes, variacoes => variacoes.carrinho)
-    variacao: Variacoes[];
+    @OneToMany(() => Variacoes, variacao => variacao.carrinho)
+    variacoes: Variacoes[];
 
     @OneToOne(() => Pedido, pedido => pedido.carrinho, { onDelete: 'CASCADE' })
     pedido: Pedido;

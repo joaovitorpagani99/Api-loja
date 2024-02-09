@@ -44,4 +44,8 @@ export class Entrega {
 
     @UpdateDateColumn()
     updatedAt: Date;
+
+    constructor(partical: Partial<Entrega>){
+        Object.assign(this, partical)
+    }
 }
