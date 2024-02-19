@@ -27,16 +27,22 @@ import { RegistroPedido } from './pedido/entities/registroPedido';
 import { Imagem } from './variacoes/entities/imagem.entity';
 import { CarrinhoModule } from './carrinho/carrinho.module';
 import { Carrinho } from './carrinho/entities/carrinho.entity';
-import { PagSeguroModule } from 'nestjs-pagseguro';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { AppService } from './app.service';
 @Module({
   imports: [
-    PagSeguroModule.register({
-      axiosOptions: {
-        baseURL: process.env.API_PAGSEGURO_BASE_URL,
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.MAIL_HOST,
+        secure: false,
+        port: process.env.MAIL_PORT,
+        auth: {
+          user:  process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS,
+        },
       },
-      application: {
-        appID: process.env.PAGSEGURO_APPID,
-        AppKey: process.env.PAGSEGURO_APPKEY,
+      defaults: {
+        from: '"',
       },
     }),
     ConfigModule.forRoot(),
@@ -48,7 +54,19 @@ import { PagSeguroModule } from 'nestjs-pagseguro';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       entities: [
-        Pagamento, Usuario, Loja, Cliente, Categoria, Pedido, Avaliacao, Entrega, Produto, Variacoes, RegistroPedido, Imagem, Carrinho
+        Pagamento,
+        Usuario,
+        Loja,
+        Cliente,
+        Categoria,
+        Pedido,
+        Avaliacao,
+        Entrega,
+        Produto,
+        Variacoes,
+        RegistroPedido,
+        Imagem,
+        Carrinho,
       ],
       synchronize: true,
       keepConnectionAlive: true,
@@ -72,5 +90,7 @@ import { PagSeguroModule } from 'nestjs-pagseguro';
     CarrinhoModule,
   ],
   controllers: [AppController],
+  providers: [AppService],
+
 })
-export class AppModule { }
+export class AppModule {}

@@ -55,7 +55,6 @@ export class PedidoService {
       valorEntrega.valorpac,
     );
 
-    console.log(pagamento);
 
     const entrega = new Entrega({
       tipo: 'PAC',
@@ -67,7 +66,6 @@ export class PedidoService {
       loja,
     });
 
-    console.log(entrega);
 
     await this.entregaService.salvar(entrega).catch((err) => {
       throw new BadRequestException(err.message);

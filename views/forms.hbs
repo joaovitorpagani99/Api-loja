@@ -1,0 +1,30 @@
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Envio de Email</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="mb-3 mt-3">
+          <h3>Envio de emails Utilizando NestJS</h3>
+    <form action="/enviar-email" method="post">
+      <div class="col-md-4">
+        <input class="form-control mb-3" type="email" placeholder="Email" name="email">
+      </div>
+      <div class="col-md-4">
+        <textarea class="form-control mb-3" type="text" placeholder="Mensagem" name="mensagem"></textarea>
+      </div>
+      <button class="btn btn-primary" type="submit">Enviar Email</button>
+    </form>
+    </div>
+  </div>
+</body>
+
+</html>

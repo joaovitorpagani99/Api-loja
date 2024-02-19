@@ -3,13 +3,16 @@ import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { WinstonModule } from 'nest-winston';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { AllExceptionsFilter } from './Exception/exception-glocal';
+import { join } from 'path';
 
 
 async function bootstrap() {
   dotenv.config();
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  app.setViewEngine('hbs');
 
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());

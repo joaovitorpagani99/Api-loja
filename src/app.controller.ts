@@ -1,12 +1,26 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post, Render, Request } from '@nestjs/common';
 import { IsPublic } from './auth/decorator/is-public.decorator';
+import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
 
-  @Get()
-  @IsPublic()
-  getHello(): string {
-    return 'Api de ecommerce, desenvolvida por João Vitor Pagani';
+  constructor(private readonly appService: AppService) {}
+  
+  @Get('email')
+  @Render('form')
+  exibirForm() {
+    //
   }
+
+  @Post('enviar-email')
+  @IsPublic()
+  enviarEmail(@Request() req) {
+    return this.appService.enviarEmail(
+      req.body.email,
+      req.body.mensagem,
+    );
+  }
+
+
 }
